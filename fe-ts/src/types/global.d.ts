@@ -30,4 +30,8 @@ declare global {
         fullName: string,
         password: string
     }
+    interface LoginData {
+        username: string,
+        password: string
+    }
 }

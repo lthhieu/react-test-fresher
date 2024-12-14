@@ -2,9 +2,9 @@ import { APIRegister } from '@/services/api';
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Divider, App } from 'antd';
 import { useState } from 'react';
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
-const boxStyle: React.CSSProperties = {
+export const boxStyle: React.CSSProperties = {
     width: '100%',
     height: '100vh',
     backgroundColor: '#f0f2f5'
@@ -82,7 +82,7 @@ const RegisterPage = () => {
                 </Form>
                 <Divider plain>Hoặc</Divider>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <a href="#">Đăng nhập bây giờ!</a>
+                    <Link to="/login">Đăng nhập bây giờ!</Link>
                 </div>
             </Card>
         </Flex>
