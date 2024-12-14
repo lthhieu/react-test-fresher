@@ -1,14 +1,7 @@
-import { APILogin } from '@/services/api';
+import { APIRegister } from '@/services/api';
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Divider } from 'antd';
 import { useState } from 'react';
-
-type FieldType = {
-    fullName?: string;
-    email?: string;
-    password?: string;
-    phone?: string;
-};
 
 const boxStyle: React.CSSProperties = {
     width: '100%',
@@ -17,17 +10,14 @@ const boxStyle: React.CSSProperties = {
 };
 const RegisterPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
-    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    const onFinish: FormProps<RegisterData>['onFinish'] = async (values) => {
         setLoading(true)
-        setTimeout(async () => {
-            setLoading(false);
-            // console.log(values);
-            const res = await APILogin("admin@gmail.com", "1123456");
-            console.log(res)
-        }, 3000)
+        const res = await APIRegister(values);
+        console.log(res)
+        setLoading(false);
     };
 
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+    const onFinishFailed: FormProps<RegisterData>['onFinishFailed'] = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
     return (
@@ -41,7 +31,7 @@ const RegisterPage = () => {
                     autoComplete="off"
 
                 >
-                    <Form.Item<FieldType>
+                    <Form.Item<RegisterData>
                         label="Họ tên"
                         name="fullName"
                         rules={[{ required: true, message: 'Please input your fullName!' }]}
@@ -49,7 +39,7 @@ const RegisterPage = () => {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item<FieldType>
+                    <Form.Item<RegisterData>
                         label="Email"
                         name="email"
                         rules={[{ required: true, message: 'Please input your email!' },
@@ -59,7 +49,7 @@ const RegisterPage = () => {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item<FieldType>
+                    <Form.Item<RegisterData>
                         label="Password"
                         name="password"
                         rules={[{ required: true, message: 'Please input your password!' }]}
@@ -67,7 +57,7 @@ const RegisterPage = () => {
                         <Input.Password />
                     </Form.Item>
 
-                    <Form.Item<FieldType>
+                    <Form.Item<RegisterData>
                         label="Số điện thoại"
                         name="phone"
                         rules={[{ required: true, message: 'Please input your phone!' }]}

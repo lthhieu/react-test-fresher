@@ -19,4 +19,15 @@ declare global {
         access_token: string,
         user: UserInfo
     }
+    interface RegisterResponse {
+        _id: string,
+        email: string,
+        fullName: string
+    }
+    interface RegisterData {
+        email: string,
+        phone: string,
+        fullName: string,
+        password: string
+    }
 }
