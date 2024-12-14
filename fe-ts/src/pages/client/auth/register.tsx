@@ -1,7 +1,8 @@
 import { APIRegister } from '@/services/api';
 import type { FormProps } from 'antd';
-import { Button, Card, Flex, Form, Input, Divider } from 'antd';
+import { Button, Card, Flex, Form, Input, Divider, App } from 'antd';
 import { useState } from 'react';
+import { useNavigate } from "react-router";
 
 const boxStyle: React.CSSProperties = {
     width: '100%',
@@ -10,10 +11,17 @@ const boxStyle: React.CSSProperties = {
 };
 const RegisterPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
+    let navigate = useNavigate();
+    const { message } = App.useApp();
     const onFinish: FormProps<RegisterData>['onFinish'] = async (values) => {
         setLoading(true)
         const res = await APIRegister(values);
-        console.log(res)
+        if (res.data) {
+            message.success(res.message !== "" ? res.message : "Đã tạo tài khoản thành công!");
+            navigate("/login");
+        } else {
+            message.error(res.message);
+        }
         setLoading(false);
     };
 
