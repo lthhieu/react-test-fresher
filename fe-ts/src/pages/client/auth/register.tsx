@@ -1,3 +1,4 @@
+import { APILogin } from '@/services/api';
 import type { FormProps } from 'antd';
 import { Button, Card, Flex, Form, Input, Divider } from 'antd';
 import { useState } from 'react';
@@ -16,9 +17,14 @@ const boxStyle: React.CSSProperties = {
 };
 const RegisterPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
-    const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         setLoading(true)
-        setTimeout(() => { setLoading(false); console.log(values) }, 3000)
+        setTimeout(async () => {
+            setLoading(false);
+            // console.log(values);
+            const res = await APILogin("admin@gmail.com", "1123456");
+            console.log(res)
+        }, 3000)
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
