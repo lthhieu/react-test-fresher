@@ -20,7 +20,7 @@ const RegisterPage = () => {
             message.success(res.message !== "" ? res.message : "Đã tạo tài khoản thành công!");
             navigate("/login");
         } else {
-            message.error(res.message);
+            message.error(res.message && Array.isArray(res.message) ? res.message[0] : res.message);
         }
         setLoading(false);
     };

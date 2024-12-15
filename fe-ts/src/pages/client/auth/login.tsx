@@ -17,7 +17,7 @@ const LoginPage = () => {
             localStorage.setItem('access_token', res.data.access_token);
             navigate("/");
         } else {
-            message.error(res.message);
+            message.error(res.message && Array.isArray(res.message) ? res.message[0] : res.message);
         }
         setLoading(false);
     };

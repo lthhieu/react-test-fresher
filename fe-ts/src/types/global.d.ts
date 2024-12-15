@@ -3,9 +3,9 @@ export { };
 declare global {
     interface BEResponse<T> {
         statusCode: number,
-        message: string,
+        message: string | string[],
         data?: T,
-        error?: string | string[]
+        error?: string
     }
     interface UserInfo {
         email: string,
