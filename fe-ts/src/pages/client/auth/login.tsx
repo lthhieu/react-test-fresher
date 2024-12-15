@@ -4,10 +4,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { FormProps } from 'antd';
 import { APILogin } from "@/services/api";
+import { handleLogin } from "@/redux/feature/accountSlice";
+import { useAppDispatch } from "@/redux/hooks";
 
 const LoginPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     let navigate = useNavigate();
+    const dispatch = useAppDispatch()
     const { message } = App.useApp();
     const onFinish: FormProps<LoginData>['onFinish'] = async (values) => {
         setLoading(true)
@@ -15,6 +18,10 @@ const LoginPage = () => {
         if (res.data) {
             message.success(res.message !== "" ? res.message : "Đăng nhập thành công!");
             localStorage.setItem('access_token', res.data.access_token);
+            dispatch(handleLogin({
+                isAuthenticated: true,
+                user: res.data.user
+            }))
             navigate("/");
         } else {
             message.error(res.message && Array.isArray(res.message) ? res.message[0] : res.message);
