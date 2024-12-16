@@ -1,9 +1,10 @@
+import { selectUser } from "@/redux/feature/account/accountSlice"
 import { useAppSelector } from "@/redux/hooks"
 
 const HomePage = () => {
-    const email = useAppSelector((state) => state.account.user?.email)
+    const user = useAppSelector(selectUser)
     return (
-        <div>HomePage {email}</div>
+        <div>HomePage {user?.email}</div>
     )
 }
 export default HomePage

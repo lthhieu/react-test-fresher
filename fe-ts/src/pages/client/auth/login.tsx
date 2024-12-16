@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { FormProps } from 'antd';
 import { APILogin } from "@/services/api";
-import { handleLogin } from "@/redux/feature/accountSlice";
+import { handleLogin } from "@/redux/feature/account/accountSlice";
 import { useAppDispatch } from "@/redux/hooks";
 
 const LoginPage = () => {
