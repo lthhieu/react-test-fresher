@@ -5,7 +5,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 export interface AccountState {
     isAuthenticated: boolean,
     user: UserInfo | null,
-    loading?: "idle" | "loading" | "failed"
+    loading: "idle" | "loading" | "failed"
 }
 
 const initialState: AccountState = {
@@ -20,7 +20,7 @@ export const accountSlice = createAppSlice({
     reducers: create => ({
         // Use the `PayloadAction` type to declare the contents of `action.payload`
         handleLogin: create.reducer(
-            (state, action: PayloadAction<AccountState>) => {
+            (state, action: PayloadAction<Omit<AccountState, 'loading'>>) => {
                 state.isAuthenticated = action.payload.isAuthenticated
                 state.user = action.payload.user
             },
