@@ -11,7 +11,7 @@ declare global {
         email: string,
         phone: string,
         fullName: string,
-        role: string,
+        role: 'ADMIN' | 'USER',
         avatar: string,
         id: string
     }
