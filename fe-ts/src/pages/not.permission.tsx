@@ -1,7 +1,7 @@
 import { Button, Result } from 'antd';
 import { useNavigate } from 'react-router';
 
-const NotFound = () => {
+const NotPermission = () => {
     let navigate = useNavigate();
     return (
         <div style={{
@@ -10,8 +10,8 @@ const NotFound = () => {
             width: '100%', height: '100vh'
         }}>
             <Result
-                status="404" title="404"
-                subTitle="Xin lỗi, trang bạn truy cập không tồn tại !"
+                status="403" title="403"
+                subTitle="Xin lỗi, bạn không có quyền truy cập tài nguyên này !"
                 extra={<Button onClick={() => navigate("/")} type="primary">Trang chủ</Button>}
             />
         </div>
@@ -19,4 +19,4 @@ const NotFound = () => {
     )
 }
 
-export default NotFound;
+export default NotPermission;

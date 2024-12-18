@@ -1,4 +1,3 @@
-import App from "@/App";
 import BookManagePage from "@/pages/admin/book";
 import DashboardPage from "@/pages/admin/dashboard";
 import UserManagePage from "@/pages/admin/user";
