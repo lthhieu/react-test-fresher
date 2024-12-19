@@ -1,8 +1,9 @@
 
 import { Outlet } from "react-router"
 import React from 'react';
-import { Flex, Layout } from 'antd';
-import { AndroidOutlined } from "@ant-design/icons";
+import { Input, Layout } from 'antd';
+import { FaReact } from "react-icons/fa";
+import { SearchOutlined } from "@ant-design/icons";
 
 const { Header, Footer, Content } = Layout;
 
@@ -12,7 +13,7 @@ const headerStyle: React.CSSProperties = {
     // height: 64,
     paddingInline: 100,
     lineHeight: '64px',
-    backgroundColor: '#4096ff',
+    backgroundColor: '#333',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -45,15 +46,15 @@ const LayoutClient = () => {
         <>
             <Layout style={layoutStyle}>
                 <Header style={headerStyle}>
-                    <div style={{ display: 'flex' }}>
-                        <AndroidOutlined style={{ fontSize: '32px', color: '#fffc' }} />
-                        <p>MenuFoldOutlined</p>
+                    <div style={{ display: 'flex', gap: 4, color: 'orange', alignItems: 'center' }}>
+                        <FaReact style={{ fontSize: '32px', }} />
+                        <strong>Book Store</strong>
                     </div>
-                    <div style={{ width: '500px' }}>
-                        <p>MenuFoldOutlined</p>
+                    <div style={{ width: '50%' }}>
+                        <Input size="large" placeholder="large size" prefix={<SearchOutlined style={{ color: '#ccc' }} />} />
 
                     </div>
-                    <div>ava cart</div>
+                    <div style={{ color: '#ccc' }}>ava cart</div>
                 </Header>
                 <Content style={contentStyle}><Outlet /></Content>
                 <Footer style={footerStyle}>Footer</Footer>
