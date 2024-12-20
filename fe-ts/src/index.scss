@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+}
+
+.override-input-component-by-hieulth {
+    &:hover {
+        border-color: #ff5500;
+    }
+
+    &:focus-within {
+        border-color: #ff5500;
+    }
+}

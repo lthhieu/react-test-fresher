@@ -1,9 +1,14 @@
 
 import { Outlet } from "react-router"
 import React from 'react';
-import { Input, Layout } from 'antd';
+import { Avatar, Badge, Dropdown, Input, Layout, MenuProps, Space, theme, Typography } from 'antd';
 import { FaReact } from "react-icons/fa";
 import { SearchOutlined } from "@ant-design/icons";
+import { LuShoppingCart } from "react-icons/lu";
+import { useAppSelector } from "@/redux/hooks";
+import { selectUser } from "@/redux/feature/account/accountSlice";
+
+const { Text } = Typography;
 
 const { Header, Footer, Content } = Layout;
 
@@ -29,8 +34,8 @@ const contentStyle: React.CSSProperties = {
 
 const footerStyle: React.CSSProperties = {
     textAlign: 'center',
-    color: '#fffc',
-    backgroundColor: '#001529',
+    color: '#ccc',
+    backgroundColor: '#333',
 };
 
 const layoutStyle: React.CSSProperties = {
@@ -41,20 +46,84 @@ const layoutStyle: React.CSSProperties = {
     minHeight: '100vh'
 };
 
+const items: MenuProps['items'] = [
+    {
+        label: (
+            <a href="https://www.antgroup.com" target="_blank" rel="noopener noreferrer">
+                1st menu item
+            </a>
+        ),
+        key: '0',
+    },
+    {
+        label: (
+            <a href="https://www.aliyun.com" target="_blank" rel="noopener noreferrer">
+                2nd menu item
+            </a>
+        ),
+        key: '1',
+    },
+    {
+        type: 'divider',
+    },
+    {
+        label: '3rd menu item',
+        key: '3',
+    },
+];
+
+const { useToken } = theme;
+
 const LayoutClient = () => {
+    const user = useAppSelector(selectUser)
+    const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${user?.avatar}`
+    const { token } = useToken();
+
+    const contentMenuStyle: React.CSSProperties = {
+        backgroundColor: token.colorBgElevated,
+        borderRadius: token.borderRadiusLG,
+        boxShadow: token.boxShadowSecondary,
+        marginTop: '10px',
+    };
+
+    const menuStyle: React.CSSProperties = {
+        boxShadow: 'none',
+    };
     return (
         <>
             <Layout style={layoutStyle}>
                 <Header style={headerStyle}>
-                    <div style={{ display: 'flex', gap: 4, color: 'orange', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: 4, color: '#ff5500', alignItems: 'center' }}>
                         <FaReact style={{ fontSize: '32px', }} />
-                        <strong>Book Store</strong>
+                        <strong style={{ fontSize: 18 }}>Book Store</strong>
                     </div>
                     <div style={{ width: '50%' }}>
-                        <Input size="large" placeholder="large size" prefix={<SearchOutlined style={{ color: '#ccc' }} />} />
-
+                        <Input className="override-input-component-by-hieulth" size="large" placeholder="Bạn muốn tìm gì hôm nay" prefix={<SearchOutlined style={{ color: '#ff5500' }} />} />
                     </div>
-                    <div style={{ color: '#ccc' }}>ava cart</div>
+                    <Space size="middle">
+                        <a href="#">
+                            <Badge count={5} size="small" color="#ff5500" style={{ boxShadow: 'none' }}>
+                                <Avatar icon={<LuShoppingCart size={26} />} size="large" style={{ backgroundColor: '#333' }} />
+                            </Badge>
+                        </a>
+                        <Space>
+                            {user && <Dropdown menu={{ items }} trigger={['click']}
+                                dropdownRender={(menu) => (
+                                    <div style={contentMenuStyle}>
+                                        {React.cloneElement(menu as React.ReactElement, { style: menuStyle })}
+                                    </div>
+                                )}>
+                                <a onClick={(e) => e.preventDefault()}>
+                                    <Space>
+                                        <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fff' }} />
+                                    </Space>
+                                </a>
+                            </Dropdown>}
+                            <Text style={{ color: '#fffc' }}>{user && user.fullName ? user.fullName : "Tài khoản"}</Text>
+                        </Space>
+
+
+                    </Space>
                 </Header>
                 <Content style={contentStyle}><Outlet /></Content>
                 <Footer style={footerStyle}>Footer</Footer>
