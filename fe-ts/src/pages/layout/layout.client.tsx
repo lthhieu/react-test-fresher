@@ -7,6 +7,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { LuShoppingCart } from "react-icons/lu";
 import { useAppSelector } from "@/redux/hooks";
 import { selectUser } from "@/redux/feature/account/accountSlice";
+import { MdLogout } from "react-icons/md";
 
 const { Text } = Typography;
 
@@ -50,7 +51,7 @@ const items: MenuProps['items'] = [
     {
         label: (
             <a href="https://www.antgroup.com" target="_blank" rel="noopener noreferrer">
-                1st menu item
+                Quản lý tài khoản
             </a>
         ),
         key: '0',
@@ -58,7 +59,7 @@ const items: MenuProps['items'] = [
     {
         label: (
             <a href="https://www.aliyun.com" target="_blank" rel="noopener noreferrer">
-                2nd menu item
+                Lịch sử mua hàng
             </a>
         ),
         key: '1',
@@ -67,8 +68,10 @@ const items: MenuProps['items'] = [
         type: 'divider',
     },
     {
-        label: '3rd menu item',
+        label: 'Đăng xuất',
         key: '3',
+        style: { color: '#ff4d4f' },
+        icon: <MdLogout color="#ff4d4f" size={18} />,
     },
 ];
 
@@ -108,11 +111,33 @@ const LayoutClient = () => {
                         </a>
                         <Space>
                             {user && <Dropdown menu={{ items }} trigger={['click']}
-                                dropdownRender={(menu) => (
-                                    <div style={contentMenuStyle}>
-                                        {React.cloneElement(menu as React.ReactElement, { style: menuStyle })}
-                                    </div>
-                                )}>
+                                dropdownRender={(menu) => {
+                                    // Tạo danh sách mới từ items gốc
+                                    const updatedItems = [...items];
+
+                                    // Thêm phần tử vào danh sách nếu user.role === 'ADMIN'
+                                    if (user?.role === 'ADMIN') {
+                                        updatedItems.unshift({
+                                            label: (
+                                                <a href="https://admin.dashboard.com" target="_blank" rel="noopener noreferrer">
+                                                    Quản lý hệ thống
+                                                </a>
+                                            ),
+                                            key: '4',
+
+                                        });
+                                    }
+                                    return (
+                                        <div style={contentMenuStyle}>
+                                            {React.cloneElement(menu as React.ReactElement,
+                                                {
+                                                    style: menuStyle,
+                                                    items: updatedItems, // Cập nhật danh sách phần tử
+                                                }
+                                            )}
+                                        </div>
+                                    )
+                                }}>
                                 <a onClick={(e) => e.preventDefault()}>
                                     <Space>
                                         <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fff' }} />
