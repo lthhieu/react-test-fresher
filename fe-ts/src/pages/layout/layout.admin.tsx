@@ -1,24 +1,18 @@
 import { selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice"
 import { useAppSelector } from "@/redux/hooks"
-import { Outlet } from "react-router"
-import { MenuFoldOutlined, MenuUnfoldOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined, } from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
+import { Outlet, useNavigate } from "react-router"
+import { BookOutlined, HomeFilled, HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined, } from '@ant-design/icons';
+import { Avatar, Button, Layout, Menu, theme } from 'antd';
 import React, { useState } from "react";
 import NotPermission from "@/pages/not.permission";
 
 const { Header, Sider, Content } = Layout;
 
-const items = [UserOutlined, VideoCameraOutlined, UploadOutlined, UserOutlined].map(
-    (icon, index) => ({
-        key: String(index + 1),
-        icon: React.createElement(icon),
-        label: `nav ${index + 1}`,
-    }),
-);
-
 const LayoutAdmin = () => {
+    const navigate = useNavigate()
     const isAuthenticated = useAppSelector(selectIsAuthenticated)
     const user = useAppSelector(selectUser)
+    const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${user?.avatar}`
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer, borderRadiusLG },
@@ -29,13 +23,32 @@ const LayoutAdmin = () => {
                 <Layout >
                     <Sider style={{ height: '100vh' }} trigger={null} collapsible collapsed={collapsed} collapsedWidth={0} breakpoint="xs">
                         <Header style={{ color: '#fffc', fontSize: '16px', display: 'flex', gap: 10, alignItems: 'center', padding: '0 20px' }}>
-                            <img style={{ width: 'auto', maxHeight: '33px', opacity: .8 }} src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" />
-                            <span>Admin</span></Header>
+                            <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fffc' }} />
+                            <span>{user?.fullName}</span></Header>
                         <Menu
                             theme="dark"
                             mode="inline"
                             defaultSelectedKeys={['1']}
-                            items={items}
+                            items={[
+                                {
+                                    key: '1',
+                                    icon: <HomeOutlined />,
+                                    label: 'Trang chủ',
+                                    onClick: () => navigate('/admin')
+                                },
+                                {
+                                    key: '2',
+                                    icon: <UserOutlined />,
+                                    label: 'Người dùng',
+                                    onClick: () => navigate('/admin/books')
+                                },
+                                {
+                                    key: '3',
+                                    icon: <BookOutlined />,
+                                    label: 'Sách',
+                                    onClick: () => navigate('/admin/users')
+                                },
+                            ]}
                         />
                     </Sider>
                     <Layout>
