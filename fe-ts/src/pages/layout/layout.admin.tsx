@@ -112,7 +112,7 @@ const LayoutAdmin = () => {
                                     height: 64,
                                 }}
                             />
-                            <Dropdown trigger={['click', 'hover']} menu={{ items: itemsOption }}
+                            <Dropdown trigger={['click']} menu={{ items: itemsOption }}
                                 dropdownRender={(menu) => {
 
                                     return (
