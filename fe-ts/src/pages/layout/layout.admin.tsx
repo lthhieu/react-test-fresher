@@ -1,13 +1,15 @@
 import { selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice"
 import { useAppSelector } from "@/redux/hooks"
 import { Link, Outlet } from "react-router"
-import { BookOutlined, HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, } from '@ant-design/icons';
-import { Avatar, Button, Layout, Menu, theme, Typography } from 'antd';
-import { useState } from "react";
+import { BookOutlined, DashboardOutlined, DownOutlined, HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, } from '@ant-design/icons';
+import { Avatar, Button, Dropdown, Layout, Menu, MenuProps, Space, theme, Typography } from 'antd';
+import React, { useState } from "react";
 import NotPermission from "@/pages/not.permission";
+import { MdLogout } from "react-icons/md";
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
+const { useToken } = theme;
 
 const LayoutAdmin = () => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated)
@@ -23,11 +25,11 @@ const LayoutAdmin = () => {
         {
             label: (
                 <Link to='/admin'>
-                    Trang chủ
+                    Tổng quan
                 </Link>
             ),
             key: '0',
-            icon: <HomeOutlined />,
+            icon: <DashboardOutlined />,
         },
         {
             label: (
@@ -48,6 +50,35 @@ const LayoutAdmin = () => {
             icon: <BookOutlined />,
         },
     ];
+    const itemsOption: MenuProps['items'] = [
+        {
+            label: (
+                <Link to={'/'}>
+                    Trang chủ
+                </Link>
+            ),
+            key: '0',
+            icon: <HomeOutlined />,
+        },
+        {
+            label: 'Đăng xuất',
+            key: '3',
+            style: { color: '#ff4d4f' },
+            icon: <MdLogout color="#ff4d4f" size={18} />,
+        },
+    ];
+    const { token } = useToken();
+    const contentMenuStyle: React.CSSProperties = {
+        backgroundColor: token.colorBgElevated,
+        borderRadius: token.borderRadiusLG,
+        boxShadow: token.boxShadowSecondary,
+        marginTop: '-20px',
+        marginRight: '20px'
+    };
+
+    const menuStyle: React.CSSProperties = {
+        boxShadow: 'none',
+    };
     return (
         <>
             {!isAuthenticated || user?.role === 'USER' ? <><NotPermission /></> :
@@ -70,7 +101,7 @@ const LayoutAdmin = () => {
                         />
                     </Sider>
                     <Layout>
-                        <Header style={{ padding: 0, background: colorBgContainer }}>
+                        <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Button
                                 type="text"
                                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -81,6 +112,26 @@ const LayoutAdmin = () => {
                                     height: 64,
                                 }}
                             />
+                            <Dropdown trigger={['click', 'hover']} menu={{ items: itemsOption }}
+                                dropdownRender={(menu) => {
+
+                                    return (
+                                        <div style={contentMenuStyle}>
+                                            {React.cloneElement(menu as React.ReactElement,
+                                                {
+                                                    style: menuStyle,
+                                                }
+                                            )}
+                                        </div>
+                                    )
+                                }}>
+                                <a onClick={(e) => e.preventDefault()}>
+                                    <Space style={{ marginRight: 20 }}>
+                                        Tùy chọn
+                                        <DownOutlined />
+                                    </Space>
+                                </a>
+                            </Dropdown>
                         </Header>
                         <Content
                             style={{
