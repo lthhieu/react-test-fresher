@@ -1,5 +1,5 @@
 
-import { Outlet } from "react-router"
+import { Link, Outlet } from "react-router"
 import React from 'react';
 import { Avatar, Badge, Dropdown, Input, Layout, MenuProps, Space, theme, Typography } from 'antd';
 import { FaReact } from "react-icons/fa";
@@ -119,9 +119,9 @@ const LayoutClient = () => {
                                     if (user?.role === 'ADMIN') {
                                         updatedItems.unshift({
                                             label: (
-                                                <a href="https://admin.dashboard.com" target="_blank" rel="noopener noreferrer">
+                                                <Link to={'/admin'}>
                                                     Quản lý hệ thống
-                                                </a>
+                                                </Link>
                                             ),
                                             key: '4',
 
