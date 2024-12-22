@@ -8,8 +8,6 @@ const centerStyle: React.CSSProperties = {
   position: 'absolute',
   top: '50%',
   left: '50%',
-  marginTop: '-50px',
-  marginLeft: '-50px'
 };
 
 function App() {
