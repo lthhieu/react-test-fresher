@@ -1,23 +1,23 @@
 
 import { Link, Outlet } from "react-router"
 import React from 'react';
-import { Avatar, Badge, Col, Dropdown, Input, Layout, MenuProps, Row, Space, theme, Typography } from 'antd';
+import { Avatar, Badge, Col, Dropdown, Grid, Input, Layout, MenuProps, Row, Space, theme, Typography } from 'antd';
 import { FaReact } from "react-icons/fa";
-import { SearchOutlined } from "@ant-design/icons";
+import { LoginOutlined, LogoutOutlined, MenuOutlined, SearchOutlined, SignatureOutlined } from "@ant-design/icons";
 import { LuShoppingCart } from "react-icons/lu";
 import { useAppSelector } from "@/redux/hooks";
-import { selectUser } from "@/redux/feature/account/accountSlice";
-import { MdLogout } from "react-icons/md";
+import { selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice";
 
-const { Text } = Typography;
-
+const { Text, Paragraph } = Typography;
+const { useBreakpoint } = Grid;
 const { Header, Footer, Content } = Layout;
 
 const headerStyle: React.CSSProperties = {
     textAlign: 'center',
     color: '#fff',
     // height: 64,
-    paddingInline: 100,
+    // paddingInline: '12%',
+    padding: 0,
     lineHeight: '64px',
     backgroundColor: '#333',
     display: 'flex',
@@ -51,6 +51,7 @@ const { useToken } = theme;
 
 const LayoutClient = () => {
     const user = useAppSelector(selectUser)
+    const isAuthenticated = useAppSelector(selectIsAuthenticated)
     const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${user?.avatar}`
     const { token } = useToken();
 
@@ -58,7 +59,7 @@ const LayoutClient = () => {
         backgroundColor: token.colorBgElevated,
         borderRadius: token.borderRadiusLG,
         boxShadow: token.boxShadowSecondary,
-        marginTop: '10px',
+        marginTop: '-10px',
     };
 
     const menuStyle: React.CSSProperties = {
@@ -89,7 +90,28 @@ const LayoutClient = () => {
             label: 'Đăng xuất',
             key: '3',
             style: { color: '#ff4d4f' },
-            icon: <MdLogout color="#ff4d4f" size={18} />,
+            icon: <LogoutOutlined color="#ff4d4f" size={18} />,
+        },
+    ];
+
+    const itemsOption: MenuProps['items'] = [
+        {
+            label: (
+                <Link to={'/login'}>
+                    Đăng nhập
+                </Link>
+            ),
+            key: '0',
+            icon: <LoginOutlined color="#ff4d4f" size={18} />,
+        },
+        {
+            label: (
+                <Link to={'/register'}>
+                    Đăng ký
+                </Link>
+            ),
+            key: '1',
+            icon: <SignatureOutlined color="#ff4d4f" size={18} />,
         },
     ];
 
@@ -105,54 +127,60 @@ const LayoutClient = () => {
         });
     }
 
+    const screens = useBreakpoint();
+
     return (
         <>
             <Layout style={layoutStyle}>
                 <Header style={headerStyle}>
                     <Row style={{ width: '100%' }}>
-                        <Col xs={2} sm={4} md={6} lg={6} xl={4} style={{ border: '1px solid green' }}>
-                            Col
+                        <Col xs={0} sm={4} md={6} style={{ color: '#ff5500', }}>
+                            <Row style={{ height: '100%' }}>
+                                <Col sm={24} md={24} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }} >
+                                    <FaReact style={{ fontSize: '32px', }} />
+                                    {screens.md && <strong style={{ fontSize: 18 }}>Book Store</strong>}
+                                </Col>
+                            </Row>
                         </Col>
-                        <Col xs={20} sm={16} md={12} lg={12} xl={14} style={{ border: '1px solid green' }}>
-                            Col
+                        <Col xs={20} sm={14} md={12} >
+                            <div style={{ width: '100%', paddingLeft: 30 }}>
+                                <Input className="override-input-component-by-hieulth" size="large" placeholder="Bạn muốn tìm gì hôm nay" prefix={<SearchOutlined style={{ color: '#ff5500' }} />} />
+                            </div>
                         </Col>
-                        <Col xs={2} sm={4} md={6} lg={6} xl={6} style={{ border: '1px solid white' }}>
-                            Col
+                        <Col xs={4} sm={0}>
+                            <Dropdown menu={{ items: isAuthenticated ? items : itemsOption }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                                <MenuOutlined />
+                            </Dropdown>
+                        </Col>
+                        <Col xs={0} sm={6} md={6} >
+                            {isAuthenticated ? <>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: '8px' }}>
+                                    <a href="#">
+                                        <Badge count={5} size="small" color="#ff5500" style={{ boxShadow: 'none' }}>
+                                            <Avatar icon={<LuShoppingCart size={26} />} size="large" style={{ backgroundColor: '#333' }} />
+                                        </Badge>
+                                    </a>
+                                    <Dropdown menu={{ items }} trigger={['click']}
+                                        dropdownRender={(menu) => {
+                                            return (
+                                                <div style={contentMenuStyle}>
+                                                    {React.cloneElement(menu as React.ReactElement, { style: menuStyle })}
+                                                </div>
+                                            )
+                                        }}
+                                    >
+                                        <a onClick={(e) => e.preventDefault()}>
+                                            <Space>
+                                                <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fff' }} />
+                                            </Space>
+                                        </a>
+                                    </Dropdown>
+                                    <Paragraph ellipsis={true} style={{ color: '#fffc', width: '100%', textAlign: 'justify' }}>{user && user.fullName ? user.fullName : "username"}</Paragraph>
+                                </div></> : <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '8px', height: '100%', marginLeft: 30 }}>
+                                <LoginOutlined style={{ fontSize: 24, color: '#fffc', }} />{' '}
+                                <Link style={{ display: 'flex' }} to={'/login'}><Text ellipsis={true} style={{ color: '#fffc', textDecoration: 'underline', }}>Đăng nhập</Text></Link></div>}
                         </Col>
                     </Row>
-                    {/* <div style={{ display: 'flex', gap: 4, color: '#ff5500', alignItems: 'center' }}>
-                        <FaReact style={{ fontSize: '32px', }} />
-                        <strong style={{ fontSize: 18 }}>Book Store</strong>
-                    </div>
-                    <div style={{ width: '50%' }}>
-                        <Input className="override-input-component-by-hieulth" size="large" placeholder="Bạn muốn tìm gì hôm nay" prefix={<SearchOutlined style={{ color: '#ff5500' }} />} />
-                    </div>
-                    <Space size="middle">
-                        <a href="#">
-                            <Badge count={5} size="small" color="#ff5500" style={{ boxShadow: 'none' }}>
-                                <Avatar icon={<LuShoppingCart size={26} />} size="large" style={{ backgroundColor: '#333' }} />
-                            </Badge>
-                        </a>
-                        <Space>
-                            {user && <Dropdown menu={{ items }} trigger={['click']}
-                                dropdownRender={(menu) => {
-                                    return (
-                                        <div style={contentMenuStyle}>
-                                            {React.cloneElement(menu as React.ReactElement, { style: menuStyle })}
-                                        </div>
-                                    )
-                                }}>
-                                <a onClick={(e) => e.preventDefault()}>
-                                    <Space>
-                                        <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fff' }} />
-                                    </Space>
-                                </a>
-                            </Dropdown>}
-                            <Text style={{ color: '#fffc' }}>{user && user.fullName ? user.fullName : "Đăng nhập"}</Text>
-                        </Space>
-
-
-                    </Space> */}
                 </Header>
                 <Content style={contentStyle}><Outlet /></Content>
                 <Footer style={footerStyle}>Footer</Footer>

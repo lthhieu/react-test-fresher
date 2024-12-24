@@ -1,25 +1,30 @@
 import { selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice"
 import { useAppSelector } from "@/redux/hooks"
 import { Link, Outlet } from "react-router"
-import { BookOutlined, DashboardOutlined, DownOutlined, HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, } from '@ant-design/icons';
-import { Avatar, Button, Dropdown, Layout, Menu, MenuProps, Space, theme, Typography } from 'antd';
-import React, { useState } from "react";
+import { BookOutlined, DashboardOutlined, DownOutlined, HomeOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, } from '@ant-design/icons';
+import { Avatar, Button, Dropdown, Grid, Layout, Menu, MenuProps, Space, theme, Typography } from 'antd';
+import React, { useEffect, useState } from "react";
 import NotPermission from "@/pages/not.permission";
-import { MdLogout } from "react-icons/md";
-
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 const { useToken } = theme;
+const { useBreakpoint } = Grid;
+
 
 const LayoutAdmin = () => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated)
     const user = useAppSelector(selectUser)
+    const screens = useBreakpoint();
     const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${user?.avatar}`
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
-
+    useEffect(() => {
+        if (screens.xs) {
+            setCollapsed(true)
+        }
+    }, [screens])
 
     const items = [
         {
@@ -64,7 +69,7 @@ const LayoutAdmin = () => {
             label: 'Đăng xuất',
             key: '3',
             style: { color: '#ff4d4f' },
-            icon: <MdLogout color="#ff4d4f" size={18} />,
+            icon: <LogoutOutlined color="#ff4d4f" size={18} />,
         },
     ];
     const { token } = useToken();
