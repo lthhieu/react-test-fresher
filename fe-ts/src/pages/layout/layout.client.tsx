@@ -1,12 +1,12 @@
 
-import { Link, Outlet } from "react-router"
+import { Link, Outlet, useNavigate } from "react-router"
 import React from 'react';
-import { Avatar, Badge, Col, Dropdown, Grid, Input, Layout, MenuProps, Row, Space, theme, Typography } from 'antd';
+import { App, Avatar, Badge, Col, Dropdown, Grid, Input, Layout, MenuProps, Row, Space, theme, Typography } from 'antd';
 import { FaReact } from "react-icons/fa";
 import { LoginOutlined, LogoutOutlined, MenuOutlined, SearchOutlined, SignatureOutlined } from "@ant-design/icons";
 import { LuShoppingCart } from "react-icons/lu";
-import { useAppSelector } from "@/redux/hooks";
-import { selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { handleLogoutAsync, selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice";
 
 const { Text, Paragraph } = Typography;
 const { useBreakpoint } = Grid;
@@ -54,6 +54,9 @@ const LayoutClient = () => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated)
     const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${user?.avatar}`
     const { token } = useToken();
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+    const { message } = App.useApp();
 
     const contentMenuStyle: React.CSSProperties = {
         backgroundColor: token.colorBgElevated,
@@ -91,6 +94,13 @@ const LayoutClient = () => {
             key: '3',
             style: { color: '#ff4d4f' },
             icon: <LogoutOutlined color="#ff4d4f" size={18} />,
+            onClick: async () => {
+                const res = await dispatch(handleLogoutAsync())
+                if (res.payload.includes('success')) {
+                    message.success("Đăng xuất thành công!");
+                    navigate('/')
+                }
+            }
         },
     ];
 

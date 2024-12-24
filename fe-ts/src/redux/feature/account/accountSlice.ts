@@ -1,5 +1,5 @@
 import { createAppSlice } from '@/redux/createAppSlice'
-import { fetchAccount } from '@/redux/feature/account/accountAPI'
+import { fetchAccount, logout } from '@/redux/feature/account/accountAPI'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
 export interface AccountState {
@@ -46,6 +46,28 @@ export const accountSlice = createAppSlice({
                 },
             },
         ),
+
+        handleLogoutAsync: create.asyncThunk(
+            async () => {
+                const response = await logout()
+                // The value we return becomes the `fulfilled` action payload
+                return response
+            },
+            {
+                pending: state => {
+                    state.loading = "loading"
+                },
+                fulfilled: (state, action) => {
+                    state.loading = "idle"
+                    state.user = null
+                    state.isAuthenticated = false
+                    localStorage.removeItem("access_token")
+                },
+                rejected: state => {
+                    state.loading = "failed"
+                },
+            },
+        ),
     }),
     // You can define your selectors here. These selectors receive the slice
     // state as their first argument.
@@ -56,6 +78,6 @@ export const accountSlice = createAppSlice({
     },
 })
 
-export const { handleLogin, handleFetchAccountAsync } = accountSlice.actions
+export const { handleLogin, handleFetchAccountAsync, handleLogoutAsync } = accountSlice.actions
 // Selectors returned by `slice.selectors` take the root state as their first argument.
 export const { selectIsAuthenticated, selectUser, selectLoading } = accountSlice.selectors

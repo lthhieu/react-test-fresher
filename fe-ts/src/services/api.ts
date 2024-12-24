@@ -10,3 +10,6 @@ export const APIRegister = (data: RegisterData) => {
 export const APIFetchAccount = () => {
     return axios.get<BEResponse<{ user: UserInfo }>>("/api/v1/auth/account")
 }
+export const APILogout = () => {
+    return axios.post<BEResponse<any>>("/api/v1/auth/logout")
+}

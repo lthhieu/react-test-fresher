@@ -1,8 +1,8 @@
-import { selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice"
-import { useAppSelector } from "@/redux/hooks"
-import { Link, Outlet } from "react-router"
+import { handleLogoutAsync, selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice"
+import { useAppDispatch, useAppSelector } from "@/redux/hooks"
+import { Link, Outlet, useNavigate } from "react-router"
 import { BookOutlined, DashboardOutlined, DownOutlined, HomeOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, } from '@ant-design/icons';
-import { Avatar, Button, Dropdown, Grid, Layout, Menu, MenuProps, Space, theme, Typography } from 'antd';
+import { App, Avatar, Button, Dropdown, Grid, Layout, Menu, MenuProps, Space, theme, Typography } from 'antd';
 import React, { useEffect, useState } from "react";
 import NotPermission from "@/pages/not.permission";
 const { Header, Sider, Content } = Layout;
@@ -15,7 +15,10 @@ const LayoutAdmin = () => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated)
     const user = useAppSelector(selectUser)
     const screens = useBreakpoint();
+    const navigate = useNavigate()
+    const { message } = App.useApp();
     const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${user?.avatar}`
+    const dispatch = useAppDispatch()
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer, borderRadiusLG },
@@ -70,6 +73,13 @@ const LayoutAdmin = () => {
             key: '3',
             style: { color: '#ff4d4f' },
             icon: <LogoutOutlined color="#ff4d4f" size={18} />,
+            onClick: async () => {
+                const res = await dispatch(handleLogoutAsync())
+                if (res.payload.includes('success')) {
+                    message.success("Đăng xuất thành công!");
+                    navigate('/')
+                }
+            }
         },
     ];
     const { token } = useToken();
