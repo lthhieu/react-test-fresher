@@ -140,6 +140,7 @@ const columns: ProColumns<UserWithPaginate>[] = [
     },
     {
         title: 'Tùy chọn',
+        hideInSearch: true,
         render: (text, record, _, action) => (
             <Space>
 
@@ -165,9 +166,28 @@ const UserTable = () => {
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort, filter) => {
-                    // console.log(params);
+                    console.log(params);
                     await waitTime(1000);
-                    const res = await APIFetchUsersWithPaginate(params.current ?? +meta.current, params.pageSize ?? +meta.pageSize)
+                    let queryString = ''
+                    if (params.fullName) {
+                        queryString += `&fullName=/${params.fullName}/i`
+                    }
+                    if (params.email) {
+                        queryString += `&email=/${params.email}/i`
+                    }
+                    if (params.isActive === 'active') {
+                        queryString += `&isActive=true`
+                    }
+                    if (params.isActive === 'notActive') {
+                        queryString += `&isActive=false`
+                    }
+                    if (params.startTime) {
+                        queryString += `&createdAt>=${params.startTime}`
+                    }
+                    if (params.endTime) {
+                        queryString += `&createdAt<=${params.endTime}`
+                    }
+                    const res = await APIFetchUsersWithPaginate(params.current ?? +meta.current, params.pageSize ?? +meta.pageSize, queryString)
                     if (res.data) {
                         setMeta(res.data.meta)
                         return {

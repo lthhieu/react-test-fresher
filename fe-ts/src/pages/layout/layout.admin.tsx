@@ -5,7 +5,7 @@ import { BookOutlined, DashboardOutlined, DownOutlined, HomeOutlined, LogoutOutl
 import { App, Avatar, Button, Dropdown, Grid, Layout, Menu, MenuProps, Space, theme, Typography } from 'antd';
 import React, { useEffect, useState } from "react";
 import NotPermission from "@/pages/not.permission";
-const { Header, Sider, Content } = Layout;
+const { Header, Sider, Content, Footer } = Layout;
 const { Text } = Typography;
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
@@ -107,8 +107,8 @@ const LayoutAdmin = () => {
     return (
         <>
             {!isAuthenticated || user?.role === 'USER' ? <><NotPermission /></> :
-                <Layout >
-                    <Sider style={{ height: '100vh' }} trigger={null} collapsible collapsed={collapsed} collapsedWidth={0} breakpoint="xs">
+                <Layout>
+                    <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth={0} breakpoint="xs">
                         <Header style={{ color: '#fffc', fontSize: '16px', display: 'flex', gap: 10, alignItems: 'center', padding: '0 20px' }}>
                             <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fffc', width: '30%' }} />
                             {/* <span>{user?.fullName}</span> */}
@@ -170,6 +170,7 @@ const LayoutAdmin = () => {
                             <Outlet />
                         </Content>
                     </Layout>
+                    <Footer style={{ border: '1px solid red' }}>footer</Footer>
                 </Layout>
             }
         </>
