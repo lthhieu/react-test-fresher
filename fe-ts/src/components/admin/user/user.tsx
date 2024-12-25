@@ -217,7 +217,8 @@ const UserTable = () => {
                     current: +meta.current,
                     // onChange: (page) => console.log(page),
                     showSizeChanger: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} dòng`
+                    showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} dòng`,
+                    pageSizeOptions: ['5', '10', '50', '100']
                 }}
                 dateFormatter="string"
                 headerTitle="Danh sách người dùng"
