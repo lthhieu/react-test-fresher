@@ -13,3 +13,8 @@ export const APIFetchAccount = () => {
 export const APILogout = () => {
     return axios.post<BEResponse<any>>("/api/v1/auth/logout")
 }
+
+//user module
+export const APIFetchUsersWithPaginate = () => {
+    return axios.get<BEResponse<Paginate<UserWithPaginate>>>("/api/v1/user?current=1&pageSize=10")
+}

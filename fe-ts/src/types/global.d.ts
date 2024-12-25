@@ -7,6 +7,26 @@ declare global {
         data?: T,
         error?: string
     }
+    interface Paginate<T> {
+        meta: {
+            current: string,
+            pageSize: string,
+            pages: number,
+            total: number
+        },
+        result: T[]
+    }
+    interface UserWithPaginate {
+        _id: string,
+        fullName: string,
+        email: string,
+        phone: string,
+        role: 'ADMIN' | 'USER',
+        avatar: string,
+        isActive: boolean,
+        createdAt: Date,
+        updatedAt: Date,
+    }
     interface UserInfo {
         email: string,
         phone: string,
