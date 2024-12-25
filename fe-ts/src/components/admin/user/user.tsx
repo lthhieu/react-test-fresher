@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale/en_US';
 import viVN from 'antd/lib/locale/vi_VN';
@@ -152,6 +152,12 @@ const columns: ProColumns<UserWithPaginate>[] = [
 
 const UserTable = () => {
     const actionRef = useRef<ActionType>();
+    const [meta, setMeta] = useState({
+        current: '1',
+        pageSize: '5',
+        pages: 0,
+        total: 0
+    })
     return (
         <ConfigProvider locale={viVN}>
             <ProTable<UserWithPaginate>
@@ -159,13 +165,15 @@ const UserTable = () => {
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort, filter) => {
-                    console.log(sort, filter);
-                    await waitTime(2000);
-                    const res = await APIFetchUsersWithPaginate()
+                    // console.log(params);
+                    await waitTime(1000);
+                    const res = await APIFetchUsersWithPaginate(params.current ?? +meta.current, params.pageSize ?? +meta.pageSize)
                     if (res.data) {
+                        setMeta(res.data.meta)
                         return {
                             data: res.data?.result as UserWithPaginate[],
-                            // total: res.data?.meta.total
+                            total: res.data?.meta.total,
+                            // success: true
                         }
                     }
                     return []
@@ -205,8 +213,9 @@ const UserTable = () => {
                 //     },
                 // }}
                 pagination={{
-                    pageSize: 5,
-                    onChange: (page) => console.log(page),
+                    pageSize: +meta.pageSize,
+                    current: +meta.current,
+                    // onChange: (page) => console.log(page),
                     showSizeChanger: true,
                     showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} dòng`
                 }}

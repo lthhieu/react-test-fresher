@@ -15,6 +15,6 @@ export const APILogout = () => {
 }
 
 //user module
-export const APIFetchUsersWithPaginate = () => {
-    return axios.get<BEResponse<Paginate<UserWithPaginate>>>("/api/v1/user?current=1&pageSize=10")
+export const APIFetchUsersWithPaginate = (current: number, pageSize: number) => {
+    return axios.get<BEResponse<Paginate<UserWithPaginate>>>(`/api/v1/user?current=${current}&pageSize=${pageSize}`)
 }
