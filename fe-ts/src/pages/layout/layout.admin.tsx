@@ -1,6 +1,6 @@
 import { handleLogoutAsync, selectIsAuthenticated, selectUser } from "@/redux/feature/account/accountSlice"
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
-import { Link, Outlet, useNavigate } from "react-router"
+import { Link, Outlet, useLocation, useNavigate } from "react-router"
 import { BookOutlined, DashboardOutlined, DownOutlined, HomeOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, } from '@ant-design/icons';
 import { App, Avatar, Button, Dropdown, Grid, Layout, Menu, MenuProps, Space, theme, Typography } from 'antd';
 import React, { useEffect, useState } from "react";
@@ -15,7 +15,9 @@ const LayoutAdmin = () => {
     const isAuthenticated = useAppSelector(selectIsAuthenticated)
     const user = useAppSelector(selectUser)
     const screens = useBreakpoint();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    let location = useLocation()
+    const [current, setCurrent] = useState(location.pathname)
     const { message } = App.useApp();
     const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${user?.avatar}`
     const dispatch = useAppDispatch()
@@ -29,6 +31,14 @@ const LayoutAdmin = () => {
         }
     }, [screens])
 
+    useEffect(() => {
+        if (location) {
+            if (current !== location.pathname) {
+                setCurrent(location.pathname);
+            }
+        }
+    }, [location, current]);
+
     const items = [
         {
             label: (
@@ -36,7 +46,7 @@ const LayoutAdmin = () => {
                     Tổng quan
                 </Link>
             ),
-            key: '0',
+            key: '/admin',
             icon: <DashboardOutlined />,
         },
         {
@@ -45,7 +55,7 @@ const LayoutAdmin = () => {
                     Người dùng
                 </Link>
             ),
-            key: '1',
+            key: '/admin/users',
             icon: <UserOutlined />,
         },
         {
@@ -54,7 +64,7 @@ const LayoutAdmin = () => {
                     Sách
                 </Link>
             ),
-            key: '2',
+            key: '/admin/books',
             icon: <BookOutlined />,
         },
     ];
@@ -65,7 +75,7 @@ const LayoutAdmin = () => {
                     Trang chủ
                 </Link>
             ),
-            key: '0',
+            key: '/',
             icon: <HomeOutlined />,
         },
         {
@@ -111,7 +121,7 @@ const LayoutAdmin = () => {
                         <Menu
                             theme="dark"
                             mode="inline"
-                            defaultSelectedKeys={['0']}
+                            selectedKeys={[current]}
                             items={items}
                         />
                     </Sider>
