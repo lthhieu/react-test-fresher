@@ -19,6 +19,14 @@ export const waitTime = async (time: number = 100) => {
     await waitTimePromise(time);
 };
 
+interface MyParams {
+    fullName: string,
+    email: string,
+    isActive: 'active' | 'notActive',
+    startTime: Date,
+    endTime: Date
+}
+
 
 const columns: ProColumns<UserWithPaginate>[] = [
     {
@@ -32,76 +40,23 @@ const columns: ProColumns<UserWithPaginate>[] = [
         ellipsis: true,
         search: false,
         copyable: true,
-        // render: (_, record) => (
-        //     <a href='#'>
-        //         {record._id}
-        //     </a>
-        // ),
     },
     {
-        // disable: true,
         title: 'Full name',
         dataIndex: 'fullName',
         search: true,
-        // filters: true,
-        // onFilter: true,
         ellipsis: true,
         sorter: true,
-
-        // valueType: 'select',
-        // valueEnum: {
-        //     all: { text: '超长'.repeat(50) },
-        //     open: {
-        //         text: '未解决',
-        //         status: 'Error',
-        //     },
-        //     closed: {
-        //         text: '已解决',
-        //         status: 'Success',
-        //         disabled: true,
-        //     },
-        //     processing: {
-        //         text: '解决中',
-        //         status: 'Processing',
-        //     },
-        // },
     },
     {
-        // disable: true,
         title: 'Email',
         dataIndex: 'email',
-        search: true,
         copyable: true,
         sorter: true,
-        // filters: true,
-        // onFilter: true,
-        // ellipsis: true,
-        // valueType: 'select',
-        // valueEnum: {
-        //     all: { text: '超长'.repeat(50) },
-        //     open: {
-        //         text: '未解决',
-        //         status: 'Error',
-        //     },
-        //     closed: {
-        //         text: '已解决',
-        //         status: 'Success',
-        //         disabled: true,
-        //     },
-        //     processing: {
-        //         text: '解决中',
-        //         status: 'Processing',
-        //     },
-        // },
     },
     {
-        // disable: true,
         title: 'Trạng thái',
         dataIndex: 'isActive',
-        // search: true,
-        // renderFormItem: (_, { defaultRender }) => {
-        //     return defaultRender(_);
-        // },
         render: (_, record) => (
             <Space>
                 <Tag color={record.isActive ? 'success' : 'error'} key={record._id}>
@@ -109,7 +64,6 @@ const columns: ProColumns<UserWithPaginate>[] = [
                 </Tag>
             </Space>
         ),
-        // search: false,
         valueType: 'select',
         valueEnum: {
             active: { text: 'Đã xác thực' },
@@ -118,7 +72,6 @@ const columns: ProColumns<UserWithPaginate>[] = [
     },
     {
         title: 'Ngày tạo',
-        // key: 'showTime',
         dataIndex: 'createdAt',
         valueType: 'date',
         sorter: true,
@@ -126,7 +79,6 @@ const columns: ProColumns<UserWithPaginate>[] = [
     },
     {
         title: 'Ngày tạo',
-        dataIndex: 'created_at',
         valueType: 'dateRange',
         hideInTable: true,
         search: {
@@ -161,14 +113,13 @@ const UserTable = () => {
     })
     return (
         <ConfigProvider locale={viVN}>
-            <ProTable<UserWithPaginate>
+            <ProTable<UserWithPaginate, MyParams>
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort, filter) => {
-                    console.log(params);
                     await waitTime(1000);
-                    let queryString = ''
+                    let queryString = `?current=${params.current}&pageSize=${params.pageSize}`
                     if (params.fullName) {
                         queryString += `&fullName=/${params.fullName}/i`
                     }
@@ -187,13 +138,13 @@ const UserTable = () => {
                     if (params.endTime) {
                         queryString += `&createdAt<=${params.endTime}`
                     }
-                    const res = await APIFetchUsersWithPaginate(params.current ?? +meta.current, params.pageSize ?? +meta.pageSize, queryString)
+                    const res = await APIFetchUsersWithPaginate(queryString)
                     if (res.data) {
                         setMeta(res.data.meta)
                         return {
                             data: res.data?.result as UserWithPaginate[],
                             total: res.data?.meta.total,
-                            // success: true
+                            success: true
                         }
                     }
                     return []

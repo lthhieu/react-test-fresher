@@ -15,12 +15,6 @@ export const APILogout = () => {
 }
 
 //user module
-export const APIFetchUsersWithPaginate = (current: number, pageSize: number, filter: string) => {
-    let beUrl = ''
-    if (filter === '') {
-        beUrl = `/api/v1/user?current=${current}&pageSize=${pageSize}`
-    } else {
-        beUrl = `/api/v1/user?current=${current}&pageSize=${pageSize}&${filter}`
-    }
-    return axios.get<BEResponse<Paginate<UserWithPaginate>>>(beUrl)
+export const APIFetchUsersWithPaginate = (queryString: string) => {
+    return axios.get<BEResponse<Paginate<UserWithPaginate>>>(`/api/v1/user${queryString}`)
 }
