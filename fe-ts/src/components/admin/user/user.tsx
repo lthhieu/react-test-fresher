@@ -7,6 +7,7 @@ import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale/en_US';
 import viVN from 'antd/lib/locale/vi_VN';
 import { APIFetchUsersWithPaginate } from '@/services/api';
+import { SortOrder } from 'antd/lib/table/interface';
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -26,6 +27,9 @@ interface MyParams {
     startTime: Date,
     endTime: Date
 }
+
+//record type
+type sortInfo = "fullName" | "email" | "createdAt"
 
 
 const columns: ProColumns<UserWithPaginate>[] = [
@@ -117,27 +121,38 @@ const UserTable = () => {
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
-                request={async (params, sort, filter) => {
+                request={async (params, sort: Record<sortInfo, SortOrder>, filter) => {
                     await waitTime(1000);
+
                     let queryString = `?current=${params.current}&pageSize=${params.pageSize}`
-                    if (params.fullName) {
-                        queryString += `&fullName=/${params.fullName}/i`
+
+                    //search
+                    const paramsCopy = { ...params }
+                    delete paramsCopy.current
+                    delete paramsCopy.pageSize
+                    delete paramsCopy.keyword
+                    const filters = {
+                        'fullName=': paramsCopy.fullName ? `/${paramsCopy.fullName}/i` : null,
+                        'email=': paramsCopy.email ? `/${paramsCopy.email}/i` : null,
+                        'isActive=': paramsCopy.isActive === 'active' ? 'true' : paramsCopy.isActive === 'notActive' ? 'false' : null,
+                        'createdAt>=': paramsCopy.startTime || null,
+                        'createdAt<=': paramsCopy.endTime || null,
+                    };
+
+                    queryString += Object.entries(filters)
+                        .filter(([_, value]) => value !== null)
+                        .map(([key, value]) => `&${key}${value}`)
+                        .join('');
+
+                    //sorter
+                    if (Object.entries(sort).length > 0) {
+                        queryString += '&sort=' +
+                            Object.entries(sort)
+                                .map(([key, value]) => value === 'ascend' ? key : value === 'descend' ? `-${key}` : '')
+                                .filter(Boolean)
+                                .join(',');
                     }
-                    if (params.email) {
-                        queryString += `&email=/${params.email}/i`
-                    }
-                    if (params.isActive === 'active') {
-                        queryString += `&isActive=true`
-                    }
-                    if (params.isActive === 'notActive') {
-                        queryString += `&isActive=false`
-                    }
-                    if (params.startTime) {
-                        queryString += `&createdAt>=${params.startTime}`
-                    }
-                    if (params.endTime) {
-                        queryString += `&createdAt<=${params.endTime}`
-                    }
+                    console.log(queryString)
                     const res = await APIFetchUsersWithPaginate(queryString)
                     if (res.data) {
                         setMeta(res.data.meta)
