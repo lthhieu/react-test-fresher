@@ -1,13 +1,14 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Space, Tag } from 'antd';
+import { Button, Drawer, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale/en_US';
 import viVN from 'antd/lib/locale/vi_VN';
 import { APIFetchUsersWithPaginate } from '@/services/api';
 import { SortOrder } from 'antd/lib/table/interface';
+import UserInfo from '@/components/admin/user/user.info';
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -31,82 +32,6 @@ interface MyParams {
 //record type
 type sortInfo = "fullName" | "email" | "createdAt"
 
-
-const columns: ProColumns<UserWithPaginate>[] = [
-    {
-        dataIndex: 'index',
-        valueType: 'indexBorder',
-        width: 48,
-    },
-    {
-        title: 'ID',
-        dataIndex: '_id',
-        ellipsis: true,
-        search: false,
-        copyable: true,
-    },
-    {
-        title: 'Full name',
-        dataIndex: 'fullName',
-        search: true,
-        ellipsis: true,
-        sorter: true,
-    },
-    {
-        title: 'Email',
-        dataIndex: 'email',
-        copyable: true,
-        sorter: true,
-    },
-    {
-        title: 'Trạng thái',
-        dataIndex: 'isActive',
-        render: (_, record) => (
-            <Space>
-                <Tag color={record.isActive ? 'success' : 'error'} key={record._id}>
-                    {record.isActive ? 'Đã xác thực' : 'Chưa xác thực'}
-                </Tag>
-            </Space>
-        ),
-        valueType: 'select',
-        valueEnum: {
-            active: { text: 'Đã xác thực' },
-            notActive: { text: 'Chưa xác thực', },
-        },
-    },
-    {
-        title: 'Ngày tạo',
-        dataIndex: 'createdAt',
-        valueType: 'date',
-        sorter: true,
-        hideInSearch: true,
-    },
-    {
-        title: 'Ngày tạo',
-        valueType: 'dateRange',
-        hideInTable: true,
-        search: {
-            transform: (value) => {
-                return {
-                    startTime: value[0],
-                    endTime: value[1],
-                };
-            },
-        },
-    },
-    {
-        title: 'Tùy chọn',
-        hideInSearch: true,
-        render: (text, record, _, action) => (
-            <Space>
-
-                <EditOutlined style={{ color: '#faad14', fontSize: 18, cursor: 'pointer' }} />{' '}
-                <DeleteOutlined style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }} />
-            </Space>
-        )
-    },
-];
-
 const UserTable = () => {
     const actionRef = useRef<ActionType>();
     const [meta, setMeta] = useState({
@@ -115,7 +40,100 @@ const UserTable = () => {
         pages: 0,
         total: 0
     })
-    return (
+    const [userInfo, setUserInfo] = useState<UserWithPaginate | null>(null)
+    const [open, setOpen] = useState(false);
+
+    const showDrawer = () => {
+        setOpen(true);
+    };
+
+    const onClose = () => {
+        setOpen(false);
+    };
+    const columns: ProColumns<UserWithPaginate>[] = [
+        {
+            dataIndex: 'index',
+            valueType: 'indexBorder',
+            width: 48,
+        },
+        {
+            title: 'ID',
+            dataIndex: '_id',
+            ellipsis: true,
+            search: false,
+            render: (_, record) => {
+                return (
+                    <a onClick={() => {
+                        setUserInfo(record);
+                        showDrawer()
+                    }}>
+                        {record._id}
+                    </a>
+                )
+            },
+        },
+        {
+            title: 'Full name',
+            dataIndex: 'fullName',
+            search: true,
+            ellipsis: true,
+            sorter: true,
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            copyable: true,
+            sorter: true,
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'isActive',
+            render: (_, record) => (
+                <Space>
+                    <Tag color={record.isActive ? 'success' : 'error'} key={record._id}>
+                        {record.isActive ? 'Đã xác thực' : 'Chưa xác thực'}
+                    </Tag>
+                </Space>
+            ),
+            valueType: 'select',
+            valueEnum: {
+                active: { text: 'Đã xác thực' },
+                notActive: { text: 'Chưa xác thực', },
+            },
+        },
+        {
+            title: 'Ngày tạo',
+            dataIndex: 'createdAt',
+            valueType: 'date',
+            sorter: true,
+            hideInSearch: true,
+        },
+        {
+            title: 'Ngày tạo',
+            valueType: 'dateRange',
+            hideInTable: true,
+            search: {
+                transform: (value) => {
+                    return {
+                        startTime: value[0],
+                        endTime: value[1],
+                    };
+                },
+            },
+        },
+        {
+            title: 'Tùy chọn',
+            hideInSearch: true,
+            render: (text, record, _, action) => (
+                <Space>
+
+                    <EditOutlined style={{ color: '#faad14', fontSize: 18, cursor: 'pointer' }} />{' '}
+                    <DeleteOutlined style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }} />
+                </Space>
+            )
+        },
+    ];
+    return (<>
         <ConfigProvider locale={viVN}>
             <ProTable<UserWithPaginate, MyParams>
                 columns={columns}
@@ -222,7 +240,12 @@ const UserTable = () => {
                 ]}
             />
         </ConfigProvider>
-
+        <UserInfo
+            onClose={onClose}
+            open={open}
+            data={userInfo}
+        />
+    </>
     );
 };
 export default UserTable
