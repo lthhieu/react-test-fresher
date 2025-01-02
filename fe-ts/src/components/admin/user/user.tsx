@@ -9,6 +9,7 @@ import viVN from 'antd/lib/locale/vi_VN';
 import { APIFetchUsersWithPaginate } from '@/services/api';
 import { SortOrder } from 'antd/lib/table/interface';
 import UserInfo from '@/components/admin/user/user.info';
+import moment from 'moment';
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -104,9 +105,12 @@ const UserTable = () => {
         {
             title: 'Ngày tạo',
             dataIndex: 'createdAt',
-            valueType: 'date',
+            // valueType: 'date',
             sorter: true,
             hideInSearch: true,
+            render: (_, record) => (
+                <span>{moment(new Date(record.createdAt)).format('DD/MM/YYYY').toString()}</span>
+            ),
         },
         {
             title: 'Ngày tạo',
