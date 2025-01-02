@@ -109,7 +109,7 @@ const UserTable = () => {
             sorter: true,
             hideInSearch: true,
             render: (_, record) => (
-                <span>{moment(new Date(record.createdAt)).format('DD/MM/YYYY').toString()}</span>
+                <span>{moment(record.createdAt).format('DD/MM/YYYY').toString()}</span>
             ),
         },
         {
