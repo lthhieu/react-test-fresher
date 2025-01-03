@@ -110,7 +110,7 @@ const LayoutAdmin = () => {
                 <Layout style={{ minHeight: '100vh' }}>
                     <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth={0} breakpoint="xs">
                         <Header style={{ color: '#fffc', fontSize: '16px', display: 'flex', gap: 10, alignItems: 'center', padding: '0 20px' }}>
-                            <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fffc', width: '30%' }} />
+                            <Avatar src={<img src={url} alt="avatar" />} style={{ backgroundColor: '#fffc', width: '27%' }} />
                             {/* <span>{user?.fullName}</span> */}
                             <Text
                                 style={{ color: '#fffc', width: '100%' }}

@@ -1,4 +1,4 @@
-import { Badge, Drawer } from "antd"
+import { Avatar, Badge, Drawer } from "antd"
 import { Descriptions } from 'antd';
 import type { DescriptionsProps } from 'antd';
 import moment from "moment";
@@ -10,6 +10,7 @@ interface IProps {
 
 const UserInfo = (props: IProps) => {
     const { data, onClose, open } = props
+    const url = `${import.meta.env.VITE_BACKEND_URI}/images/avatar/${data?.avatar}`
     const items: DescriptionsProps['items'] = [
         {
             label: 'ID',
@@ -34,7 +35,12 @@ const UserInfo = (props: IProps) => {
         {
             label: 'Quyền hạn',
             children: <Badge status="processing" text={data?.role} />,
-            span: { xs: 1, sm: 4 }
+            span: { xs: 1, sm: 2 }
+        },
+        {
+            label: 'Ảnh đại diện',
+            children: <Avatar size={40} src={url}></Avatar>,
+            span: { xs: 1, sm: 2 }
         },
         {
             label: 'Ngày tạo',
