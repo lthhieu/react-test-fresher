@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Drawer, Space, Tag } from 'antd';
+import { Button, Drawer, Space, Tag, Modal, Form, Input } from 'antd';
 import { useRef, useState } from 'react';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale/en_US';
@@ -43,6 +43,7 @@ const UserTable = () => {
     })
     const [userInfo, setUserInfo] = useState<UserWithPaginate | null>(null)
     const [open, setOpen] = useState(false);
+    const [form] = Form.useForm();
 
     const showDrawer = () => {
         setOpen(true);
@@ -137,6 +138,27 @@ const UserTable = () => {
             )
         },
     ];
+    const [openModal, setOpenModal] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Content of the modal');
+
+    const handleOk = () => {
+        form.submit()
+        // setModalText('The modal will be closed after two seconds');
+        // setConfirmLoading(true);
+        // setTimeout(() => {
+        //     setOpenModal(false);
+        //     setConfirmLoading(false);
+        // }, 2000);
+    };
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        form.resetFields()
+        setOpenModal(false);
+    };
+    const showModal = () => {
+        setOpenModal(true);
+    };
     return (<>
         <ConfigProvider locale={viVN}>
             <ProTable<UserWithPaginate, MyParams>
@@ -234,9 +256,11 @@ const UserTable = () => {
                     <Button
                         key="button"
                         icon={<PlusOutlined />}
-                        onClick={() => {
-                            actionRef.current?.reload();
-                        }}
+                        // onClick={() => {
+                        //     // actionRef.current?.reload();
+                        //     
+                        // }}
+                        onClick={showModal}
                         type="primary"
                     >
                         Thêm mới
@@ -249,6 +273,59 @@ const UserTable = () => {
             open={open}
             data={userInfo}
         />
+        <Modal
+            title="Tạo mới người dùng"
+            open={openModal}
+            onOk={handleOk}
+            confirmLoading={confirmLoading}
+            onCancel={handleCancel}
+            okText="OK"
+        >
+            <Form
+                layout='vertical'
+                name="register"
+                // onFinish={onFinish}
+                // onFinishFailed={onFinishFailed}
+                autoComplete="off"
+                form={form}
+
+            >
+                <Form.Item<RegisterData>
+                    label="Họ tên"
+                    name="fullName"
+                    rules={[{ required: true, message: 'Please input your fullName!' }]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<RegisterData>
+                    label="Email"
+                    name="email"
+                    rules={[{ required: true, message: 'Please input your email!' },
+                    { type: 'email', message: 'This is not a valid email!' }
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<RegisterData>
+                    label="Password"
+                    name="password"
+                    rules={[{ required: true, message: 'Please input your password!' }]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
+                <Form.Item<RegisterData>
+                    label="Số điện thoại"
+                    name="phone"
+                    rules={[{ required: true, message: 'Please input your phone!' }]}
+                >
+                    <Input />
+                </Form.Item>
+
+            </Form>
+        </Modal>
     </>
     );
 };
