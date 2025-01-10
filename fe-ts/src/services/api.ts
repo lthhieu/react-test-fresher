@@ -18,3 +18,6 @@ export const APILogout = () => {
 export const APIFetchUsersWithPaginate = (queryString: string) => {
     return axios.get<BEResponse<Paginate<UserWithPaginate>>>(`/api/v1/user${queryString}`)
 }
+export const APICreateNewUser = (data: RegisterData) => {
+    return axios.post<BEResponse<RegisterResponse>>("/api/v1/user", data)
+}
