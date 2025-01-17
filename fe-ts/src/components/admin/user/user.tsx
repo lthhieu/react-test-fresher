@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
@@ -11,6 +11,7 @@ import { SortOrder } from 'antd/lib/table/interface';
 import UserInfo from '@/components/admin/user/user.info';
 import moment from 'moment';
 import UserModal from '@/components/admin/user/user.modal';
+import ImportUserModal from '@/components/admin/user/import.user.modal';
 
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
@@ -140,10 +141,14 @@ const UserTable = () => {
         },
     ];
     const [openModal, setOpenModal] = useState(false);
+    const [openImportUserModal, setOpenImportUserModal] = useState(false);
 
 
     const showModal = () => {
         setOpenModal(true);
+    };
+    const showImportUserModal = () => {
+        setOpenImportUserModal(true);
     };
     return (<>
         <ConfigProvider locale={viVN}>
@@ -245,6 +250,18 @@ const UserTable = () => {
                 toolBarRender={() => [
                     <Button
                         key="button"
+                        icon={<ImportOutlined />}
+                        // onClick={() => {
+                        //     // actionRef.current?.reload();
+                        //     
+                        // }}
+                        onClick={showImportUserModal}
+                        type="primary"
+                    >
+                        Import
+                    </Button>,
+                    <Button
+                        key="button"
                         icon={<PlusOutlined />}
                         // onClick={() => {
                         //     // actionRef.current?.reload();
@@ -255,6 +272,7 @@ const UserTable = () => {
                     >
                         Thêm mới
                     </Button>,
+
                 ]}
             />
         </ConfigProvider>
@@ -264,6 +282,7 @@ const UserTable = () => {
             data={userInfo}
         />
         <UserModal openModal={openModal} setOpenModal={setOpenModal} refreshTable={() => actionRef.current?.reload()} />
+        <ImportUserModal openImportUserModal={openImportUserModal} setOpenImportUserModal={setOpenImportUserModal} />
     </>
     );
 };
