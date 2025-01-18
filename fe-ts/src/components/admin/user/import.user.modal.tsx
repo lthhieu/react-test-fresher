@@ -6,11 +6,13 @@ import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { message, Upload } from 'antd';
 import type { TableProps } from 'antd';
+import { Buffer } from 'buffer';
+import * as Excel from 'exceljs';
 
 interface DataType {
     fullName: string;
     email: number;
-    phoneNumber: string;
+    phone: string;
 }
 
 const columns: TableProps<DataType>['columns'] = [
@@ -26,8 +28,8 @@ const columns: TableProps<DataType>['columns'] = [
     },
     {
         title: 'Số điện thoại',
-        dataIndex: 'phoneNumber',
-        key: 'phoneNumber',
+        dataIndex: 'phone',
+        key: 'phone',
     },
 ];
 
@@ -36,10 +38,31 @@ const uploadProps: UploadProps = {
     name: 'file',
     multiple: false,
     action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-    onChange(info) {
+    async onChange(info) {
         const { status } = info.file;
         if (status !== 'uploading') {
-            console.log(info.file, info.fileList);
+            if (info.file.originFileObj) {
+                //js file fo buffer
+                const arrayBuffer = await info.file.originFileObj.arrayBuffer()
+                const buffer = Buffer.from(arrayBuffer)
+                //load buffer data - read
+                const workbook = new Excel.Workbook();
+                await workbook.xlsx.load(buffer).then(function () {
+                    const worksheet = workbook.getWorksheet(1);
+                    //excel to json
+                    if (worksheet) {
+                        console.log('rowCount: ', worksheet.rowCount);
+                        worksheet.eachRow(function (row, rowNumber) {
+                            if (rowNumber === 1) {
+                                console.log('Tiêu đề - ' + ' Value: ' + row.values)
+                            } else
+                                console.log('Row: ' + rowNumber + ' Value: ' + row.values);
+                        });
+                    }
+
+                });
+            }
+
         }
         if (status === 'done') {
             message.success(`${info.file.name} file uploaded successfully.`);
@@ -48,7 +71,7 @@ const uploadProps: UploadProps = {
         }
     },
     onDrop(e) {
-        console.log('Dropped files', e.dataTransfer.files);
+        // console.log('Dropped files', e.dataTransfer.files);
     },
     //only csv or xlsx
     beforeUpload: (file) => {
@@ -61,7 +84,7 @@ const uploadProps: UploadProps = {
     },
 
     //prevent call action
-    customRequest: ({ file, onSuccess }) => {
+    customRequest: ({ onSuccess }) => {
         if (onSuccess) {
             onSuccess("ok hieulth");
         }
