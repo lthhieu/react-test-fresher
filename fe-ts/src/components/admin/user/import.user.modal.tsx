@@ -34,62 +34,6 @@ const columns: TableProps<DataType>['columns'] = [
 ];
 
 const { Dragger } = Upload;
-const uploadProps: UploadProps = {
-    name: 'file',
-    multiple: false,
-    action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-    async onChange(info) {
-        const { status } = info.file;
-        if (status !== 'uploading') {
-            if (info.file.originFileObj) {
-                //js file fo buffer
-                const arrayBuffer = await info.file.originFileObj.arrayBuffer()
-                const buffer = Buffer.from(arrayBuffer)
-                //load buffer data - read
-                const workbook = new Excel.Workbook();
-                await workbook.xlsx.load(buffer).then(function () {
-                    const worksheet = workbook.getWorksheet(1);
-                    //excel to json
-                    if (worksheet) {
-                        console.log('rowCount: ', worksheet.rowCount);
-                        worksheet.eachRow(function (row, rowNumber) {
-                            if (rowNumber === 1) {
-                                console.log('Tiêu đề - ' + ' Value: ' + row.values)
-                            } else
-                                console.log('Row: ' + rowNumber + ' Value: ' + row.values);
-                        });
-                    }
-
-                });
-            }
-
-        }
-        if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`);
-        } else if (status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-        }
-    },
-    onDrop(e) {
-        // console.log('Dropped files', e.dataTransfer.files);
-    },
-    //only csv or xlsx
-    beforeUpload: (file) => {
-        const typeCheck = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv']
-        const isValidate = typeCheck.some((element) => element === file.type);
-        if (!isValidate) {
-            message.error(`${file.name} is not a xlsx or csv file`);
-        }
-        return isValidate || Upload.LIST_IGNORE;
-    },
-
-    //prevent call action
-    customRequest: ({ onSuccess }) => {
-        if (onSuccess) {
-            onSuccess("ok hieulth");
-        }
-    }
-};
 
 interface MyProps {
     openImportUserModal: boolean,
@@ -99,6 +43,7 @@ interface MyProps {
 const ImportUserModal = (props: MyProps) => {
     const { openImportUserModal, setOpenImportUserModal } = props
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [data, setData] = useState<DataType[]>([])
     const [form] = Form.useForm();
     const { message, notification } = App.useApp();
     const handleOk = () => {
@@ -110,8 +55,7 @@ const ImportUserModal = (props: MyProps) => {
         }, 2000);
     };
     const handleCancel = () => {
-        console.log('Clicked cancel button');
-        form.resetFields()
+        setData([])
         setOpenImportUserModal(false);
     };
     const onFinish: FormProps<RegisterData>['onFinish'] = async (values) => {
@@ -134,6 +78,71 @@ const ImportUserModal = (props: MyProps) => {
     const onFinishFailed: FormProps<RegisterData>['onFinishFailed'] = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
+    const uploadProps: UploadProps = {
+        name: 'file',
+        multiple: false,
+        action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
+        async onChange(info) {
+            const { status } = info.file;
+            if (status !== 'uploading') {
+            }
+            if (status === 'done') {
+                message.success(`${info.file.name} file uploaded successfully.`);
+                if (info.file.originFileObj) {
+                    //js file fo buffer
+                    const arrayBuffer = await info.file.originFileObj.arrayBuffer()
+                    const buffer = Buffer.from(arrayBuffer)
+                    //load buffer data - read
+                    const workbook = new Excel.Workbook();
+                    let jsonData: DataType[] = [];
+                    await workbook.xlsx.load(buffer).then(function () {
+                        const worksheet = workbook.getWorksheet(1);
+                        //excel to json
+                        if (worksheet) {
+                            // read first row as data keys
+                            let firstRow = worksheet.getRow(1);
+                            if (!firstRow.cellCount) return;
+                            let keys = firstRow.values as Array<any>;
+                            worksheet.eachRow((row, rowNumber) => {
+                                if (rowNumber == 1) return;
+                                let values = row.values as Array<any>
+                                let obj: any = {};
+                                for (let i = 1; i <= keys.length; i++) {
+                                    obj[keys[i]] = values[i];
+                                }
+                                jsonData.push(obj);
+                            })
+                        }
+
+                    });
+                    setData(jsonData)
+                }
+            } else if (status === 'error') {
+                message.error(`${info.file.name} file upload failed.`);
+            }
+        },
+        onDrop(e) {
+            console.log('Dropped files', e.dataTransfer.files);
+        },
+        //only csv or xlsx
+        beforeUpload: (file) => {
+            const typeCheck = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv']
+            const isValidate = typeCheck.some((element) => element === file.type);
+            if (!isValidate) {
+                message.error(`${file.name} is not a xlsx or csv file`);
+            }
+            return isValidate || Upload.LIST_IGNORE;
+        },
+
+        //prevent call action
+        customRequest: ({ onSuccess }) => {
+            if (onSuccess) {
+                onSuccess("ok hieulth");
+            }
+        },
+
+
+    };
     return (
         <Modal
             title="Import Data User"
@@ -143,6 +152,8 @@ const ImportUserModal = (props: MyProps) => {
             onCancel={handleCancel}
             okText="Import data"
             width={"45%"}
+            okButtonProps={{ disabled: data ? false : true }}
+            destroyOnClose={true}
         >
             <Dragger {...uploadProps}>
                 <p className="ant-upload-drag-icon">
@@ -154,7 +165,7 @@ const ImportUserModal = (props: MyProps) => {
                 </p>
             </Dragger>
             <Typography style={{ margin: '20px 0px 10px 0px' }}>Dữ liệu người dùng:</Typography>
-            <Table<DataType> columns={columns} />
+            <Table<DataType> columns={columns} dataSource={data} />
         </Modal>
     )
 }
