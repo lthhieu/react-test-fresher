@@ -21,3 +21,6 @@ export const APIFetchUsersWithPaginate = (queryString: string) => {
 export const APICreateNewUser = (data: RegisterData) => {
     return axios.post<BEResponse<RegisterResponse>>("/api/v1/user", data)
 }
+export const APICreateBulkUsers = (data: RegisterData[]) => {
+    return axios.post<BEResponse<BulkCreateUsers>>("/api/v1/user/bulk-create", data)
+}

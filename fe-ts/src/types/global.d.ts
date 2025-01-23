@@ -54,4 +54,10 @@ declare global {
         username: string,
         password: string
     }
+    interface BulkCreateUsers {
+        countError: number,
+        countSuccess: number,
+        message?: string,
+        detail?: any
+    }
 }

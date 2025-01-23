@@ -1,6 +1,6 @@
 import { Modal, Form, App, Table, Typography } from 'antd';
 import { useState } from 'react';
-import { APICreateNewUser } from '@/services/api';
+import { APICreateBulkUsers, APICreateNewUser } from '@/services/api';
 import type { FormProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
@@ -11,7 +11,7 @@ import * as Excel from 'exceljs';
 
 interface DataType {
     fullName: string;
-    email: number;
+    email: string;
     phone: string;
 }
 
@@ -38,19 +38,35 @@ const { Dragger } = Upload;
 interface MyProps {
     openImportUserModal: boolean,
     setOpenImportUserModal: (v: boolean) => void
-    // refreshTable: () => void
+    refreshTable: () => void
 }
 const ImportUserModal = (props: MyProps) => {
-    const { openImportUserModal, setOpenImportUserModal } = props
+    const { openImportUserModal, setOpenImportUserModal, refreshTable } = props
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [data, setData] = useState<DataType[]>([])
     const [form] = Form.useForm();
     const { message, notification } = App.useApp();
+
     const handleOk = () => {
         // setModalText('The modal will be closed after two seconds');
         setConfirmLoading(true);
-        setTimeout(() => {
-            form.submit()
+        setTimeout(async () => {
+            const bulkData = data.map((v: Exclude<DataType, 'password'>) => ({
+                ...v,
+                password: '123456'
+            }))
+            const res = await APICreateBulkUsers(bulkData)
+            if (res.statusCode === 201) {
+                if (res.data) {
+                    notification.success({ message: 'Tạo thành công', description: `Success: ${res.data.countSuccess}, Error: ${res.data.countError}` })
+                    refreshTable()
+                }
+                if (!res.data?.detail) {
+                    handleCancel()
+                }
+            } else {
+                message.error("Có điều gì đó xảy ra ..")
+            }
             setConfirmLoading(false);
         }, 2000);
     };
@@ -107,7 +123,7 @@ const ImportUserModal = (props: MyProps) => {
                                 if (rowNumber == 1) return;
                                 let values = row.values as Array<any>
                                 let obj: any = {};
-                                for (let i = 1; i <= keys.length; i++) {
+                                for (let i = 1; i < keys.length; i++) {
                                     obj[keys[i]] = values[i];
                                 }
                                 jsonData.push(obj);

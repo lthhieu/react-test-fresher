@@ -282,7 +282,7 @@ const UserTable = () => {
             data={userInfo}
         />
         <UserModal openModal={openModal} setOpenModal={setOpenModal} refreshTable={() => actionRef.current?.reload()} />
-        <ImportUserModal openImportUserModal={openImportUserModal} setOpenImportUserModal={setOpenImportUserModal} />
+        <ImportUserModal openImportUserModal={openImportUserModal} setOpenImportUserModal={setOpenImportUserModal} refreshTable={() => actionRef.current?.reload()} />
     </>
     );
 };
