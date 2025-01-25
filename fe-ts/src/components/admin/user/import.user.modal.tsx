@@ -8,6 +8,7 @@ import { message, Upload } from 'antd';
 import type { TableProps } from 'antd';
 import { Buffer } from 'buffer';
 import * as Excel from 'exceljs';
+import sampleFile from '@/assets/sample-react-fresher.xlsx?url'
 
 interface DataType {
     fullName: string;
@@ -51,9 +52,10 @@ const ImportUserModal = (props: MyProps) => {
         // setModalText('The modal will be closed after two seconds');
         setConfirmLoading(true);
         setTimeout(async () => {
-            const bulkData = data.map((v: Exclude<DataType, 'password'>) => ({
+            const bulkData = data.map((v: Exclude<DataType, { password: string, isActive: boolean }>) => ({
                 ...v,
-                password: import.meta.env.VITE_DEFAULT_PASSWORD || '123456'
+                password: import.meta.env.VITE_DEFAULT_PASSWORD || '123456',
+                isActive: false
             }))
             const res = await APICreateBulkUsers(bulkData)
             if (res.statusCode === 201) {
@@ -178,6 +180,7 @@ const ImportUserModal = (props: MyProps) => {
                 <p className="ant-upload-text">Nhấp hoặc kéo tệp vào khu vực này để tải lên</p>
                 <p className="ant-upload-hint">
                     Hỗ trợ tải lên 1 file. Định dạng được hỗ trợ: xlsx, csv
+                    &nbsp;<a href={sampleFile} download>File mẫu</a>
                 </p>
             </Dragger>
             <Typography style={{ margin: '20px 0px 10px 0px' }}>Dữ liệu người dùng:</Typography>
