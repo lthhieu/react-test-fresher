@@ -53,7 +53,7 @@ const ImportUserModal = (props: MyProps) => {
         setTimeout(async () => {
             const bulkData = data.map((v: Exclude<DataType, 'password'>) => ({
                 ...v,
-                password: '123456'
+                password: import.meta.env.VITE_DEFAULT_PASSWORD || '123456'
             }))
             const res = await APICreateBulkUsers(bulkData)
             if (res.statusCode === 201) {
@@ -181,7 +181,7 @@ const ImportUserModal = (props: MyProps) => {
                 </p>
             </Dragger>
             <Typography style={{ margin: '20px 0px 10px 0px' }}>Dữ liệu người dùng:</Typography>
-            <Table<DataType> columns={columns} dataSource={data} />
+            <Table<DataType> columns={columns} dataSource={data} rowKey={'email'} />
         </Modal>
     )
 }
