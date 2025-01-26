@@ -180,7 +180,7 @@ const ImportUserModal = (props: MyProps) => {
                 <p className="ant-upload-text">Nhấp hoặc kéo tệp vào khu vực này để tải lên</p>
                 <p className="ant-upload-hint">
                     Hỗ trợ tải lên 1 file. Định dạng được hỗ trợ: xlsx, csv
-                    &nbsp;<a href={sampleFile} download>File mẫu</a>
+                    &nbsp;<a onClick={(e) => e.stopPropagation()} href={sampleFile} download>Tải file mẫu</a>
                 </p>
             </Dragger>
             <Typography style={{ margin: '20px 0px 10px 0px' }}>Dữ liệu người dùng:</Typography>
