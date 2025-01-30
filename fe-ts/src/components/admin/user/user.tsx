@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
@@ -12,6 +12,7 @@ import UserInfo from '@/components/admin/user/user.info';
 import moment from 'moment';
 import UserModal from '@/components/admin/user/user.modal';
 import ImportUserModal from '@/components/admin/user/import.user.modal';
+import { CSVLink } from 'react-csv';
 
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
@@ -45,6 +46,7 @@ const UserTable = () => {
         total: 0
     })
     const [userInfo, setUserInfo] = useState<UserWithPaginate | null>(null)
+    const [dataCsv, setDataCsv] = useState<UserWithPaginate[] | null>(null)
     const [open, setOpen] = useState(false);
 
     const showDrawer = () => {
@@ -149,7 +151,8 @@ const UserTable = () => {
     };
     const showImportUserModal = () => {
         setOpenImportUserModal(true);
-    };
+    }
+
     return (<>
         <ConfigProvider locale={viVN}>
             <ProTable<UserWithPaginate, MyParams>
@@ -195,6 +198,7 @@ const UserTable = () => {
                     const res = await APIFetchUsersWithPaginate(queryString)
                     if (res.data) {
                         setMeta(res.data.meta)
+                        setDataCsv(res.data?.result)
                         return {
                             data: res.data?.result as UserWithPaginate[],
                             total: res.data?.meta.total,
@@ -248,6 +252,13 @@ const UserTable = () => {
                 dateFormatter="string"
                 headerTitle="Danh sách người dùng"
                 toolBarRender={() => [
+                    <Button
+                        key="button"
+                        icon={<ExportOutlined />}
+                        type="primary"
+                    >
+                        <CSVLink filename='user' data={dataCsv ? dataCsv : []}>Export</CSVLink>
+                    </Button>,
                     <Button
                         key="button"
                         icon={<ImportOutlined />}
