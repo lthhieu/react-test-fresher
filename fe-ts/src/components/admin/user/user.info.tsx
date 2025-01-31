@@ -53,7 +53,6 @@ const UserInfo = (props: IProps) => {
             span: { xs: 1, sm: 2 }
         },
     ];
-    console.log(moment("2014-02-27T10:00:00").format('DD-MM-YYYY'))
     return (
         <Drawer title="Thông tin người dùng" onClose={onClose} open={open} width={'50%'}>
             <Descriptions

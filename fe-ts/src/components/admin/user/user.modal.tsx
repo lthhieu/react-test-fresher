@@ -64,19 +64,19 @@ const UserModal = (props: MyProps) => {
                 form={form}
             >
                 <Form.Item<RegisterData>
-                    label="Họ tên"
-                    name="fullName"
-                    rules={[{ required: true, message: 'Please input your fullName!' }]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item<RegisterData>
                     label="Email"
                     name="email"
                     rules={[{ required: true, message: 'Please input your email!' },
                     { type: 'email', message: 'This is not a valid email!' }
                     ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<RegisterData>
+                    label="Họ tên"
+                    name="fullName"
+                    rules={[{ required: true, message: 'Please input your fullName!' }]}
                 >
                     <Input />
                 </Form.Item>

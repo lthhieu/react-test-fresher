@@ -60,4 +60,8 @@ declare global {
         message?: string,
         detail?: any
     }
+    interface DeleteUser {
+        acknowledged: boolean,
+        deletedCount: number
+    }
 }

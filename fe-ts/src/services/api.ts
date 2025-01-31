@@ -24,3 +24,6 @@ export const APICreateNewUser = (data: RegisterData) => {
 export const APICreateBulkUsers = (data: RegisterData[]) => {
     return axios.post<BEResponse<BulkCreateUsers>>("/api/v1/user/bulk-create", data)
 }
+export const APIDeleteUser = (id: string) => {
+    return axios.delete<BEResponse<DeleteUser>>(`/api/v1/user/${id}`)
+}

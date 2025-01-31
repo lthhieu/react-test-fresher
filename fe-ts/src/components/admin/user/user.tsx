@@ -1,19 +1,19 @@
-import { DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Space, Tag } from 'antd';
+import { Button, Popconfirm, Space, Tag, App } from 'antd';
 import { useRef, useState } from 'react';
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale/en_US';
 import viVN from 'antd/lib/locale/vi_VN';
-import { APIFetchUsersWithPaginate } from '@/services/api';
+import { APIDeleteUser, APIFetchUsersWithPaginate } from '@/services/api';
 import { SortOrder } from 'antd/lib/table/interface';
 import UserInfo from '@/components/admin/user/user.info';
 import moment from 'moment';
 import UserModal from '@/components/admin/user/user.modal';
 import ImportUserModal from '@/components/admin/user/import.user.modal';
 import { CSVLink } from 'react-csv';
-
+import type { PopconfirmProps } from 'antd';
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -48,6 +48,7 @@ const UserTable = () => {
     const [userInfo, setUserInfo] = useState<UserWithPaginate | null>(null)
     const [dataCsv, setDataCsv] = useState<UserWithPaginate[] | null>(null)
     const [open, setOpen] = useState(false);
+    const { message } = App.useApp();
 
     const showDrawer = () => {
         setOpen(true);
@@ -55,6 +56,23 @@ const UserTable = () => {
 
     const onClose = () => {
         setOpen(false);
+    };
+    const deleteUser = async (id: string) => {
+        const res = await APIDeleteUser(id)
+        if (res.data) {
+            message.success('Xóa thành công!')
+            actionRef.current?.reload()
+        } else {
+            message.error(res.message)
+        }
+    }
+
+    const handleOk = (id: string) => {
+        deleteUser(id)
+    };
+
+    const cancel: PopconfirmProps['onCancel'] = (e) => {
+        console.log(e);
     };
     const columns: ProColumns<UserWithPaginate>[] = [
         {
@@ -137,7 +155,18 @@ const UserTable = () => {
                 <Space>
 
                     <EditOutlined style={{ color: '#faad14', fontSize: 18, cursor: 'pointer' }} />{' '}
-                    <DeleteOutlined style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }} />
+                    <Popconfirm
+                        title="Xóa người dùng"
+                        description={`Người dùng ${record.email} sẽ bị xóa?`}
+                        icon={<QuestionCircleOutlined style={{ color: '#ff4d4f' }} />}
+                        onConfirm={() => { handleOk(record._id) }}
+                        onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
+                        placement="left"
+                    >
+                        <DeleteOutlined style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }} />
+                    </Popconfirm>
                 </Space>
             )
         },
@@ -229,18 +258,6 @@ const UserTable = () => {
                         listsHeight: 400,
                     },
                 }}
-                // form={{
-                //     // 由于配置了 transform，提交的参数与定义的不同这里需要转化一下
-                //     syncToUrl: (values, type) => {
-                //         if (type === 'get') {
-                //             return {
-                //                 ...values,
-                //                 created_at: [values.startTime, values.endTime],
-                //             };
-                //         }
-                //         return values;
-                //     },
-                // }}
                 pagination={{
                     pageSize: +meta.pageSize,
                     current: +meta.current,
