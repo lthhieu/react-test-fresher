@@ -64,4 +64,16 @@ declare global {
         acknowledged: boolean,
         deletedCount: number
     }
+    interface UpdateUser {
+        fullName: string,
+        phone: string,
+        _id: string,
+    }
+    interface UpdateUserSuccess {
+        acknowledged: boolean,
+        matchedCount: number,
+        modifiedCount: number,
+        upsertedCount: number,
+        upsertedId: null | string
+    }
 }

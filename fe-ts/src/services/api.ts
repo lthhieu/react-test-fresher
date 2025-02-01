@@ -27,3 +27,6 @@ export const APICreateBulkUsers = (data: RegisterData[]) => {
 export const APIDeleteUser = (id: string) => {
     return axios.delete<BEResponse<DeleteUser>>(`/api/v1/user/${id}`)
 }
+export const APIUpdateUser = (data: UpdateUser) => {
+    return axios.put<BEResponse<UpdateUserSuccess>>("/api/v1/user", data)
+}

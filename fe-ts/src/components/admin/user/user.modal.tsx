@@ -1,18 +1,29 @@
 import { Modal, Form, Input, App } from 'antd';
-import { useState } from 'react';
-import { APICreateNewUser } from '@/services/api';
+import { useEffect, useState } from 'react';
+import { APICreateNewUser, APIUpdateUser } from '@/services/api';
 import type { FormProps } from 'antd';
 
 interface MyProps {
     openModal: boolean,
     setOpenModal: (v: boolean) => void
-    refreshTable: () => void
+    refreshTable: () => void,
+    userInfo: UserWithPaginate | null,
+    setUserInfo: (data: UserWithPaginate | null) => void
 }
 const UserModal = (props: MyProps) => {
-    const { openModal, setOpenModal, refreshTable } = props
+    const { openModal, setOpenModal, refreshTable, userInfo, setUserInfo } = props
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [form] = Form.useForm();
     const { message, notification } = App.useApp();
+    useEffect(() => {
+        if (userInfo) {
+            form.setFieldsValue({
+                email: userInfo.email,
+                fullName: userInfo.fullName,
+                phone: userInfo.phone,
+            });
+        }
+    }, [userInfo]);
     const handleOk = () => {
         // setModalText('The modal will be closed after two seconds');
         setConfirmLoading(true);
@@ -22,25 +33,46 @@ const UserModal = (props: MyProps) => {
         }, 2000);
     };
     const handleCancel = () => {
-        console.log('Clicked cancel button');
         form.resetFields()
+        setUserInfo(null)
         setOpenModal(false);
     };
     const onFinish: FormProps<RegisterData>['onFinish'] = async (values) => {
-        const res = await APICreateNewUser(values);
-        if (res.data) {
-            message.success(res.message !== "" ? res.message : "Đã tạo tài khoản thành công!");
-            form.resetFields()
-            setOpenModal(false);
-            refreshTable()
+        if (userInfo) {
+            const res = await APIUpdateUser({
+                _id: userInfo._id, fullName: values.fullName, phone: values.phone
+            })
+            if (res.data) {
+                message.success(res.message !== "" ? res.message : "Cập nhật thông tin thành công!");
+                form.resetFields()
+                setOpenModal(false);
+                setUserInfo(null)
+                refreshTable()
+            } else {
+                notification.error({
+                    message: 'Có lỗi xảy ra!',
+                    description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                    placement: 'topRight',
+                });
+            }
         } else {
-            // message.error(res.message && Array.isArray(res.message) ? res.message[0] : res.message);
-            notification.error({
-                message: 'Có lỗi xảy ra!',
-                description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
-                placement: 'topRight',
-            });
+            const res = await APICreateNewUser(values);
+            if (res.data) {
+                message.success(res.message !== "" ? res.message : "Đã tạo tài khoản thành công!");
+                form.resetFields()
+                setOpenModal(false);
+                setUserInfo(null)
+                refreshTable()
+            } else {
+                // message.error(res.message && Array.isArray(res.message) ? res.message[0] : res.message);
+                notification.error({
+                    message: 'Có lỗi xảy ra!',
+                    description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                    placement: 'topRight',
+                });
+            }
         }
+
     };
 
     const onFinishFailed: FormProps<RegisterData>['onFinishFailed'] = (errorInfo) => {
@@ -48,12 +80,12 @@ const UserModal = (props: MyProps) => {
     };
     return (
         <Modal
-            title="Tạo mới người dùng"
+            title={userInfo ? "Cập nhật thông tin người dùng" : 'Tạo mới người dùng'}
             open={openModal}
             onOk={handleOk}
             confirmLoading={confirmLoading}
             onCancel={handleCancel}
-            okText="Tạo mới"
+            okText={userInfo ? "Cập nhật" : 'Tạo mới'}
         >
             <Form
                 layout='vertical'
@@ -70,7 +102,7 @@ const UserModal = (props: MyProps) => {
                     { type: 'email', message: 'This is not a valid email!' }
                     ]}
                 >
-                    <Input />
+                    <Input disabled={userInfo ? true : false} />
                 </Form.Item>
 
                 <Form.Item<RegisterData>
@@ -81,13 +113,13 @@ const UserModal = (props: MyProps) => {
                     <Input />
                 </Form.Item>
 
-                <Form.Item<RegisterData>
+                {!userInfo && <Form.Item<RegisterData>
                     label="Password"
                     name="password"
                     rules={[{ required: true, message: 'Please input your password!' }]}
                 >
                     <Input.Password />
-                </Form.Item>
+                </Form.Item>}
 
                 <Form.Item<RegisterData>
                     label="Số điện thoại"

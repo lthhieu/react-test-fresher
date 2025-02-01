@@ -48,7 +48,10 @@ const UserTable = () => {
     const [userInfo, setUserInfo] = useState<UserWithPaginate | null>(null)
     const [dataCsv, setDataCsv] = useState<UserWithPaginate[] | null>(null)
     const [open, setOpen] = useState(false);
-    const { message } = App.useApp();
+    const [openModal, setOpenModal] = useState(false);
+    const [openImportUserModal, setOpenImportUserModal] = useState(false);
+
+    const { message, notification } = App.useApp();
 
     const showDrawer = () => {
         setOpen(true);
@@ -63,17 +66,33 @@ const UserTable = () => {
             message.success('Xóa thành công!')
             actionRef.current?.reload()
         } else {
-            message.error(res.message)
+            notification.error({
+                message: 'Có lỗi xảy ra!',
+                description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                placement: 'topRight',
+            });
         }
     }
 
-    const handleOk = (id: string) => {
-        deleteUser(id)
-    };
+    const showModal = () => {
+        setUserInfo(null)
+        setOpenModal(true);
 
-    const cancel: PopconfirmProps['onCancel'] = (e) => {
-        console.log(e);
     };
+    const showModalUpdateUser = (data: UserWithPaginate) => {
+        setUserInfo(data)
+        setOpenModal(true)
+    }
+    const showImportUserModal = () => {
+        setOpenImportUserModal(true);
+    }
+    const confirm = (id: string) =>
+        new Promise(() => {
+            setTimeout(() => {
+                deleteUser(id)
+            }, 1000);
+        });
+
     const columns: ProColumns<UserWithPaginate>[] = [
         {
             dataIndex: 'index',
@@ -154,16 +173,13 @@ const UserTable = () => {
             render: (text, record, _, action) => (
                 <Space>
 
-                    <EditOutlined style={{ color: '#faad14', fontSize: 18, cursor: 'pointer' }} />{' '}
+                    <EditOutlined onClick={() => showModalUpdateUser(record)} style={{ color: '#faad14', fontSize: 18, cursor: 'pointer' }} />{' '}
                     <Popconfirm
                         title="Xóa người dùng"
                         description={`Người dùng ${record.email} sẽ bị xóa?`}
                         icon={<QuestionCircleOutlined style={{ color: '#ff4d4f' }} />}
-                        onConfirm={() => { handleOk(record._id) }}
-                        onCancel={cancel}
-                        okText="Yes"
-                        cancelText="No"
-                        placement="left"
+                        placement='left'
+                        onConfirm={() => confirm(record._id)}
                     >
                         <DeleteOutlined style={{ color: '#ff4d4f', fontSize: 18, cursor: 'pointer' }} />
                     </Popconfirm>
@@ -171,16 +187,6 @@ const UserTable = () => {
             )
         },
     ];
-    const [openModal, setOpenModal] = useState(false);
-    const [openImportUserModal, setOpenImportUserModal] = useState(false);
-
-
-    const showModal = () => {
-        setOpenModal(true);
-    };
-    const showImportUserModal = () => {
-        setOpenImportUserModal(true);
-    }
 
     return (<>
         <ConfigProvider locale={viVN}>
@@ -236,19 +242,6 @@ const UserTable = () => {
                     }
                     return []
                 }}
-                // editable={{
-                //     type: 'multiple',
-                // }}
-                // columnsState={{
-                //     persistenceKey: 'pro-table-singe-demos',
-                //     persistenceType: 'localStorage',
-                //     defaultValue: {
-                //         option: { fixed: 'right', disable: true },
-                //     },
-                //     onChange(value) {
-                //         console.log('value: ', value);
-                //     },
-                // }}
                 rowKey="_id"
                 search={{
                     labelWidth: 'auto',
@@ -279,10 +272,6 @@ const UserTable = () => {
                     <Button
                         key="button"
                         icon={<ImportOutlined />}
-                        // onClick={() => {
-                        //     // actionRef.current?.reload();
-                        //     
-                        // }}
                         onClick={showImportUserModal}
                         type="primary"
                     >
@@ -291,10 +280,6 @@ const UserTable = () => {
                     <Button
                         key="button"
                         icon={<PlusOutlined />}
-                        // onClick={() => {
-                        //     // actionRef.current?.reload();
-                        //     
-                        // }}
                         onClick={showModal}
                         type="primary"
                     >
@@ -309,7 +294,7 @@ const UserTable = () => {
             open={open}
             data={userInfo}
         />
-        <UserModal openModal={openModal} setOpenModal={setOpenModal} refreshTable={() => actionRef.current?.reload()} />
+        <UserModal userInfo={userInfo} setUserInfo={setUserInfo} openModal={openModal} setOpenModal={setOpenModal} refreshTable={() => actionRef.current?.reload()} />
         <ImportUserModal openImportUserModal={openImportUserModal} setOpenImportUserModal={setOpenImportUserModal} refreshTable={() => actionRef.current?.reload()} />
     </>
     );
