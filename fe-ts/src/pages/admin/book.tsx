@@ -1,7 +1,9 @@
+import Book from "@/components/admin/book/book"
+
 const BookManagePage = () => {
     return (
         <>
-            <div>BookManagePage</div>
+            <Book />
         </>
     )
 }

@@ -30,3 +30,8 @@ export const APIDeleteUser = (id: string) => {
 export const APIUpdateUser = (data: UpdateUser) => {
     return axios.put<BEResponse<UpdateUserSuccess>>("/api/v1/user", data)
 }
+
+//book module
+export const APIFetchBooksWithPaginate = (queryString: string) => {
+    return axios.get<BEResponse<Paginate<BooksWithPaginate>>>(`/api/v1/book${queryString}`)
+}
