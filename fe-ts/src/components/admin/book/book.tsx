@@ -14,6 +14,7 @@ import UserModal from '@/components/admin/user/user.modal';
 import ImportUserModal from '@/components/admin/user/import.user.modal';
 import { CSVLink } from 'react-csv';
 import type { PopconfirmProps } from 'antd';
+import BookInfo from '@/components/admin/book/book.info';
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -41,13 +42,13 @@ const Book = () => {
         pages: 0,
         total: 0
     })
-    const [userInfo, setUserInfo] = useState<UserWithPaginate | null>(null)
-    const [dataCsv, setDataCsv] = useState<UserWithPaginate[] | null>(null)
+    const [bookInfo, setBookInfo] = useState<BooksWithPaginate | null>(null)
+    const [dataCsv, setDataCsv] = useState<BooksWithPaginate[] | null>(null)
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [openImportUserModal, setOpenImportUserModal] = useState(false);
 
-    const { message, notification } = App.useApp();
+    // const { message, notification } = App.useApp();
 
     const showDrawer = () => {
         setOpen(true);
@@ -56,38 +57,38 @@ const Book = () => {
     const onClose = () => {
         setOpen(false);
     };
-    const deleteUser = async (id: string) => {
-        const res = await APIDeleteUser(id)
-        if (res.data) {
-            message.success('Xóa thành công!')
-            actionRef.current?.reload()
-        } else {
-            notification.error({
-                message: 'Có lỗi xảy ra!',
-                description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
-                placement: 'topRight',
-            });
-        }
-    }
+    // const deleteUser = async (id: string) => {
+    //     const res = await APIDeleteUser(id)
+    //     if (res.data) {
+    //         message.success('Xóa thành công!')
+    //         actionRef.current?.reload()
+    //     } else {
+    //         notification.error({
+    //             message: 'Có lỗi xảy ra!',
+    //             description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+    //             placement: 'topRight',
+    //         });
+    //     }
+    // }
 
-    const showModal = () => {
-        setUserInfo(null)
-        setOpenModal(true);
+    // const showModal = () => {
+    //     setBookInfo(null)
+    //     setOpenModal(true);
 
-    };
-    const showModalUpdateUser = (data: UserWithPaginate) => {
-        setUserInfo(data)
-        setOpenModal(true)
-    }
-    const showImportUserModal = () => {
-        setOpenImportUserModal(true);
-    }
-    const confirm = (id: string) =>
-        new Promise(() => {
-            setTimeout(() => {
-                deleteUser(id)
-            }, 1000);
-        });
+    // };
+    // const showModalUpdateUser = (data: BooksWithPaginate) => {
+    //     setBookInfo(data)
+    //     setOpenModal(true)
+    // }
+    // const showImportUserModal = () => {
+    //     setOpenImportUserModal(true);
+    // }
+    // const confirm = (id: string) =>
+    //     new Promise(() => {
+    //         setTimeout(() => {
+    //             deleteUser(id)
+    //         }, 1000);
+    //     });
 
     const columns: ProColumns<BooksWithPaginate>[] = [
         {
@@ -103,8 +104,8 @@ const Book = () => {
             render: (_, record) => {
                 return (
                     <a onClick={() => {
-                        // setUserInfo(record);
-                        // showDrawer()
+                        setBookInfo(record);
+                        showDrawer()
                     }}>
                         {record._id}
                     </a>
@@ -245,7 +246,7 @@ const Book = () => {
                     <Button
                         key="button"
                         icon={<PlusOutlined />}
-                        onClick={showModal}
+                        // onClick={showModal}
                         type="primary"
                     >
                         Thêm mới
@@ -254,12 +255,12 @@ const Book = () => {
                 ]}
             />
         </ConfigProvider>
-        {/* <UserInfo
+        <BookInfo
             onClose={onClose}
             open={open}
-            data={userInfo}
-        /> */}
-        {/* <UserModal userInfo={userInfo} setUserInfo={setUserInfo} openModal={openModal} setOpenModal={setOpenModal} refreshTable={() => actionRef.current?.reload()} />
+            data={bookInfo}
+        />
+        {/* <UserModal bookInfo={bookInfo} setBookInfo={setBookInfo} openModal={openModal} setOpenModal={setOpenModal} refreshTable={() => actionRef.current?.reload()} />
         <ImportUserModal openImportUserModal={openImportUserModal} setOpenImportUserModal={setOpenImportUserModal} refreshTable={() => actionRef.current?.reload()} /> */}
     </>)
 }
