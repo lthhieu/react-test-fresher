@@ -3,7 +3,7 @@ import { Descriptions } from 'antd';
 import type { DescriptionsProps } from 'antd';
 import moment from "moment";
 import type { GetProp, UploadFile, UploadProps } from 'antd';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, Upload } from 'antd';
 
 interface IProps {
@@ -63,32 +63,19 @@ const BookInfo = (props: IProps) => {
     ];
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [fileList, setFileList] = useState<UploadFile[]>([
-        {
-            uid: '-1',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-2',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-3',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-4',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-    ]);
+    useEffect(() => {
+        if (data) {
+            let temp: UploadFile[] | [] = [], temp1: any = {}
+            if (data.thumbnail) {
+                temp1 = { uid: '-1', name: 'image-1', status: 'done', url: `${import.meta.env.VITE_BACKEND_URI}/images/book/${data.thumbnail}` }
+            }
+            if (data.slider && data.slider.length > 0) {
+                temp = data.slider.map((el, idx) => ({ uid: idx + '', name: `image${idx}`, status: 'done', url: `${import.meta.env.VITE_BACKEND_URI}/images/book/${el}` }))
+            }
+            setFileList([temp1, ...temp])
+        }
+    }, [data])
+    const [fileList, setFileList] = useState<UploadFile[] | []>([]);
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType);
